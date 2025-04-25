@@ -3,16 +3,31 @@ package entity;
 public class LoaiPhim {
     private String maLoai;
     private String tenLoai;
+    private String moTa;
 
-    public LoaiPhim() {
-    }
 
-    public LoaiPhim(String maLoai, String tenLoai) {
-        this.maLoai = maLoai;
-        this.tenLoai = tenLoai;
-    }
+    public LoaiPhim(String maLoai, String tenLoai, String moTa) {
+		super();
+		this.maLoai = maLoai;
+		this.tenLoai = tenLoai;
+		this.moTa = moTa;
+	}
 
-    public String getMaLoai() {
+	public LoaiPhim() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+
+	public String getMoTa() {
+		return moTa;
+	}
+
+	public void setMoTa(String moTa) {
+		this.moTa = moTa;
+	}
+
+	public String getMaLoai() {
         return maLoai;
     }
 

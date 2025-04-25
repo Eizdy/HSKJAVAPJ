@@ -48,7 +48,7 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
         menu.setBackground(new Color(25, 25, 25));
         menu.setPreferredSize(new Dimension(180, 0));
 
-        String[] items = {"Trang chủ", "Phim", "Lịch chiếu", "Đặt vé", "Khách hàng", "Thống kê", "Đăng xuất"};
+        String[] items = {"Trang chủ", "Phim", "Suất chiếu","Nhân viên","Hoá đơn", "Bán vé", "Thống kê", "Đăng xuất"};
         for (String item : items) {
             JButton btn = new JButton(item);
             btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
@@ -60,12 +60,17 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
             btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-            btn.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    btn.setBackground(new Color(60, 60, 60));
-                }
-                public void mouseExited(java.awt.event.MouseEvent evt) {
-                    btn.setBackground(new Color(40, 40, 40));
+            btn.addActionListener(e -> {
+                dispose();
+                switch (item) {
+                    case "Trang chủ" -> new TrangChuRapChieuPhim_GUI().setVisible(true);
+//                    case "Lịch chiếu" -> new LichChieu_GUI().setVisible(true);
+//                    case "Đặt vé" -> new BanVe_GUI().setVisible(true);
+           
+                    case "Phim" -> new QuanLyPhim_GUI().setVisible(true);
+                    case "Suất chiếu" -> new SuatChieu_GUI().setVisible(true);
+                    case "Đăng xuất" -> System.exit(0);
+                    default -> {} // Các mục khác chưa xử lý
                 }
             });
 
@@ -89,12 +94,8 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
                 "Interstellar", "Joker", "Avatar 2"
         };
         String[] imagePaths = {
-                "endgame.jpg",
-                "boGia.jpg",
-                "avatar.jpg",
-                "joker.jpg",
-                "Batman.jpg",
-                "yeu.jpg"
+                "endgame.jpg", "boGia.jpg", "avatar.jpg",
+                "joker.jpg", "Batman.jpg", "yeu.jpg"
         };
 
         for (int i = 0; i < phimNames.length; i++) {
