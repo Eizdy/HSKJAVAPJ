@@ -1,29 +1,27 @@
 package dao;
 
 import connectDB.ConnectDB;
-import entity.ChiTietHoaDon;
 import entity.HoaDon;
-import entity.KhachHang;
+import entity.VeXemPhim;
 
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.*;
 
 public class HoaDon_DAO {
 
     public boolean themHoaDon(HoaDon hd) {
-        String sql = "INSERT INTO HoaDon (maHoaDon, maKhachHang, ngayLap, tongTien) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO HoaDon (maHoaDon, ngayLap, soLuong, maVe) VALUES (?, ?, ?, ?)";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, hd.getMaHoaDon());
-            stmt.setString(2, hd.getKhachHang().getMaKhachHang());
-            stmt.setTimestamp(3, Timestamp.valueOf(hd.getNgayLap()));
-            stmt.setDouble(4, hd.getTongTien());
+            stmt.setDate(2, Date.valueOf(hd.getNgayLap()));
+            stmt.setInt(3, hd.getSoLuong());
+            stmt.setString(4, hd.getVe().getMaVe());
 
             return stmt.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -31,17 +29,16 @@ public class HoaDon_DAO {
     }
 
     public boolean capNhatHoaDon(HoaDon hd) {
-        String sql = "UPDATE HoaDon SET maKhachHang = ?, ngayLap = ?, tongTien = ? WHERE maHoaDon = ?";
+        String sql = "UPDATE HoaDon SET ngayLap = ?, soLuong = ?, maVe = ? WHERE maHoaDon = ?";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, hd.getKhachHang().getMaKhachHang());
-            stmt.setTimestamp(2, Timestamp.valueOf(hd.getNgayLap()));
-            stmt.setDouble(3, hd.getTongTien());
+            stmt.setDate(1, Date.valueOf(hd.getNgayLap()));
+            stmt.setInt(2, hd.getSoLuong());
+            stmt.setString(3, hd.getVe().getMaVe());
             stmt.setString(4, hd.getMaHoaDon());
 
             return stmt.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -55,7 +52,6 @@ public class HoaDon_DAO {
 
             stmt.setString(1, maHoaDon);
             return stmt.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -69,19 +65,18 @@ public class HoaDon_DAO {
 
             stmt.setString(1, maHoaDon);
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
-                HoaDon hd = new HoaDon();
-                hd.setMaHoaDon(rs.getString("maHoaDon"));
+                VeXemPhim ve = new VeXemPhim();
+                ve.setMaVe(rs.getString("maVe"));
 
-                KhachHang kh = new KhachHang();
-                kh.setMaKhachHang(rs.getString("maKhachHang"));
-                hd.setKhachHang(kh);
-
-                hd.setNgayLap(rs.getTimestamp("ngayLap").toLocalDateTime());
-                hd.setDanhSachChiTiet(new ArrayList<>()); // Danh sách chi tiết có thể lấy từ DAO khác nếu cần
-                return hd;
+                return new HoaDon(
+                        rs.getString("maHoaDon"),
+                        rs.getDate("ngayLap").toLocalDate(),
+                        rs.getInt("soLuong"),
+                        ve
+                );
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -96,18 +91,17 @@ public class HoaDon_DAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                HoaDon hd = new HoaDon();
-                hd.setMaHoaDon(rs.getString("maHoaDon"));
+                VeXemPhim ve = new VeXemPhim();
+                ve.setMaVe(rs.getString("maVe"));
 
-                KhachHang kh = new KhachHang();
-                kh.setMaKhachHang(rs.getString("maKhachHang"));
-                hd.setKhachHang(kh);
-
-                hd.setNgayLap(rs.getTimestamp("ngayLap").toLocalDateTime());
-                hd.setDanhSachChiTiet(new ArrayList<>()); // Có thể gọi DAO khác để lấy danh sách chi tiết
+                HoaDon hd = new HoaDon(
+                        rs.getString("maHoaDon"),
+                        rs.getDate("ngayLap").toLocalDate(),
+                        rs.getInt("soLuong"),
+                        ve
+                );
                 ds.add(hd);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
