@@ -9,108 +9,108 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NhanVien_DAO {
+    private Connection conn;
 
-    public boolean themNhanVien(NhanVien nv) {
-        String sql = "INSERT INTO NhanVien (maNhanVien, hoTen, soDienThoai, email, tenDangNhap) VALUES (?, ?, ?, ?, ?)";
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, nv.getMaNhanVien());
-            stmt.setString(2, nv.getHoTen());
-            stmt.setString(3, nv.getSoDienThoai());
-            stmt.setString(4, nv.getEmail());
-            stmt.setString(5, nv.getTaiKhoan().getTenDangNhap());
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public NhanVien_DAO() {
+        // Kết nối với cơ sở dữ liệu
+        ConnectDB.getInstance().connect(); // Đảm bảo kết nối trước khi sử dụng
+        this.conn = ConnectDB.getConnection();
+        
+        // Kiểm tra kết nối có thành công không
+        if (this.conn == null) {
+            System.out.println("Không thể kết nối đến cơ sở dữ liệu.");
         }
-        return false;
-    }
-
-    public boolean capNhatNhanVien(NhanVien nv) {
-        String sql = "UPDATE NhanVien SET hoTen = ?, soDienThoai = ?, email = ?, tenDangNhap = ? WHERE maNhanVien = ?";
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, nv.getHoTen());
-            stmt.setString(2, nv.getSoDienThoai());
-            stmt.setString(3, nv.getEmail());
-            stmt.setString(4, nv.getTaiKhoan().getTenDangNhap());
-            stmt.setString(5, nv.getMaNhanVien());
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public boolean xoaNhanVien(String maNhanVien) {
-        String sql = "DELETE FROM NhanVien WHERE maNhanVien = ?";
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, maNhanVien);
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public NhanVien timNhanVienTheoMa(String maNhanVien) {
-        String sql = "SELECT * FROM NhanVien WHERE maNhanVien = ?";
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, maNhanVien);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                NhanVien nv = new NhanVien();
-                nv.setMaNhanVien(rs.getString("maNhanVien"));
-                nv.setHoTen(rs.getString("hoTen"));
-                nv.setSoDienThoai(rs.getString("soDienThoai"));
-                nv.setEmail(rs.getString("email"));
-
-                TaiKhoan tk = new TaiKhoan();
-                tk.setTenDangNhap(rs.getString("tenDangNhap"));
-                nv.setTaiKhoan(tk);
-
-                return nv;
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public List<NhanVien> layTatCaNhanVien() {
-        List<NhanVien> ds = new ArrayList<>();
-        String sql = "SELECT * FROM NhanVien";
-        try (Connection conn = ConnectDB.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        List<NhanVien> nhanVienList = new ArrayList<>();
+        try {
+            if (conn != null) {
+                Statement stmt = conn.createStatement();
+                String query = "SELECT * FROM nhanvien";  // Cập nhật câu lệnh SQL nếu cần thiết
+                ResultSet rs = stmt.executeQuery(query);
 
-            while (rs.next()) {
-                NhanVien nv = new NhanVien();
-                nv.setMaNhanVien(rs.getString("maNhanVien"));
-                nv.setHoTen(rs.getString("hoTen"));
-                nv.setSoDienThoai(rs.getString("soDienThoai"));
-                nv.setEmail(rs.getString("email"));
-
-                TaiKhoan tk = new TaiKhoan();
-                tk.setTenDangNhap(rs.getString("tenDangNhap"));
-                nv.setTaiKhoan(tk);
-
-                ds.add(nv);
+                while (rs.next()) {
+                    NhanVien nv = new NhanVien();
+                    nv.setMaNhanVien(rs.getString("maNV"));
+                    nv.setHoTen(rs.getString("hoTen"));
+                    nv.setSoDienThoai(rs.getString("sdt"));
+                    nv.setEmail(rs.getString("email"));
+                    nhanVienList.add(nv);
+                }
+            } else {
+                System.out.println("Không có kết nối đến cơ sở dữ liệu.");
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return ds;
+        return nhanVienList;
+    }
+
+    public boolean themNhanVien(NhanVien nv) {
+        try {
+            if (conn != null) {
+                String query = "INSERT INTO nhanvien (maNV, hoTen, sdt, email) VALUES (?, ?, ?, ?)";
+                PreparedStatement ps = conn.prepareStatement(query);
+                ps.setString(1, nv.getMaNhanVien());
+                ps.setString(2, nv.getHoTen());
+                ps.setString(3, nv.getSoDienThoai());
+                ps.setString(4, nv.getEmail());
+
+                int result = ps.executeUpdate();
+                return result > 0;
+            } else {
+                System.out.println("Không có kết nối đến cơ sở dữ liệu.");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean capNhatNhanVien(NhanVien nv) {
+        try {
+            if (conn != null) {
+                String query = "UPDATE nhanvien SET hoTen = ?, sdt = ?, email = ? WHERE maNV = ?";
+                PreparedStatement ps = conn.prepareStatement(query);
+                ps.setString(1, nv.getHoTen());
+                ps.setString(2, nv.getSoDienThoai());
+                ps.setString(3, nv.getEmail());
+                ps.setString(4, nv.getMaNhanVien());
+
+                int result = ps.executeUpdate();
+                return result > 0;
+            } else {
+                System.out.println("Không có kết nối đến cơ sở dữ liệu.");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean xoaNhanVien(String maNV) {
+        try {
+            if (conn != null) {
+                String query = "DELETE FROM nhanvien WHERE maNV = ?";
+                PreparedStatement ps = conn.prepareStatement(query);
+                ps.setString(1, maNV);
+
+                int result = ps.executeUpdate();
+                return result > 0;
+            } else {
+                System.out.println("Không có kết nối đến cơ sở dữ liệu.");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void disconnect() {
+        ConnectDB.disconnect();
     }
 }

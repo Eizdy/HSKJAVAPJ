@@ -63,14 +63,15 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
             btn.addActionListener(e -> {
                 dispose();
                 switch (item) {
-                    case "Trang chủ" -> new TrangChuRapChieuPhim_GUI().setVisible(true);
-//                    case "Lịch chiếu" -> new LichChieu_GUI().setVisible(true);
-//                    case "Đặt vé" -> new BanVe_GUI().setVisible(true);
-           
-                    case "Phim" -> new QuanLyPhim_GUI().setVisible(true);
-                    case "Suất chiếu" -> new SuatChieu_GUI().setVisible(true);
-                    case "Đăng xuất" -> System.exit(0);
-                    default -> {} // Các mục khác chưa xử lý
+                	case "Trang chủ" -> new TrangChuRapChieuPhim_GUI().setVisible(true);
+                	case "Phim" -> new QuanLyPhim_GUI().setVisible(true);
+                	//case "Suất chiếu" -> new QuanLySuatChieu_GUI().setVisible(true);
+                	case "Nhân viên" -> new QuanLyNhanVien_GUI().setVisible(true);
+                	//case "Hoá đơn" -> new QuanLyHoaDon_GUI().setVisible(true);
+                	//case "Bán vé" -> new BanVe_GUI().setVisible(true);
+                	//case "Thống kê" -> new ThongKe_GUI().setVisible(true);
+                	case "Đăng xuất" -> System.exit(0);
+                	default -> {}
                 }
             });
 
