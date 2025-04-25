@@ -6,22 +6,22 @@ import entity.Phim;
 import entity.PhongChieuPhim;
 
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 
 public class LichChieuPhim_DAO {
 
     public boolean themLichChieu(LichChieuPhim lc) {
-        String sql = "INSERT INTO LichChieuPhim (maLichChieu, maPhim, maPhong, thoiGianChieu, giaVe) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO LichChieuPhim (maLichChieu, maPhim, maPhong, thoiGianChieu, trangThai, ngayChieu) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, lc.getMaLichChieu());
             stmt.setString(2, lc.getPhim().getMaPhim());
             stmt.setString(3, lc.getPhong().getMaPhong());
-            stmt.setTimestamp(4, Timestamp.valueOf(lc.getThoiGianChieu()));
-            stmt.setDouble(5, lc.getGiaVe());
+            stmt.setString(4, lc.getThoiGianChieu());
+            stmt.setString(5, lc.getTrangThai());
+            stmt.setDate(6, Date.valueOf(lc.getNgayChieu()));
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -31,15 +31,16 @@ public class LichChieuPhim_DAO {
     }
 
     public boolean capNhatLichChieu(LichChieuPhim lc) {
-        String sql = "UPDATE LichChieuPhim SET maPhim = ?, maPhong = ?, thoiGianChieu = ?, giaVe = ? WHERE maLichChieu = ?";
+        String sql = "UPDATE LichChieuPhim SET maPhim = ?, maPhong = ?, thoiGianChieu = ?, trangThai = ?, ngayChieu = ? WHERE maLichChieu = ?";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, lc.getPhim().getMaPhim());
             stmt.setString(2, lc.getPhong().getMaPhong());
-            stmt.setTimestamp(3, Timestamp.valueOf(lc.getThoiGianChieu()));
-            stmt.setDouble(4, lc.getGiaVe());
-            stmt.setString(5, lc.getMaLichChieu());
+            stmt.setString(3, lc.getThoiGianChieu());
+            stmt.setString(4, lc.getTrangThai());
+            stmt.setDate(5, Date.valueOf(lc.getNgayChieu()));
+            stmt.setString(6, lc.getMaLichChieu());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -68,22 +69,22 @@ public class LichChieuPhim_DAO {
 
             stmt.setString(1, maLichChieu);
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                LichChieuPhim lc = new LichChieuPhim();
-                lc.setMaLichChieu(rs.getString("maLichChieu"));
 
+            if (rs.next()) {
                 Phim phim = new Phim();
                 phim.setMaPhim(rs.getString("maPhim"));
-                lc.setPhim(phim);
 
                 PhongChieuPhim phong = new PhongChieuPhim();
                 phong.setMaPhong(rs.getString("maPhong"));
-                lc.setPhong(phong);
 
-                lc.setThoiGianChieu(rs.getTimestamp("thoiGianChieu").toLocalDateTime());
-                lc.setGiaVe(rs.getDouble("giaVe"));
-
-                return lc;
+                return new LichChieuPhim(
+                        rs.getString("maLichChieu"),
+                        phim,
+                        phong,
+                        rs.getString("thoiGianChieu"),
+                        rs.getString("trangThai"),
+                        rs.getDate("ngayChieu").toLocalDate()
+                );
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -99,23 +100,22 @@ public class LichChieuPhim_DAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                LichChieuPhim lc = new LichChieuPhim();
-                lc.setMaLichChieu(rs.getString("maLichChieu"));
-
                 Phim phim = new Phim();
                 phim.setMaPhim(rs.getString("maPhim"));
-                lc.setPhim(phim);
 
                 PhongChieuPhim phong = new PhongChieuPhim();
                 phong.setMaPhong(rs.getString("maPhong"));
-                lc.setPhong(phong);
 
-                lc.setThoiGianChieu(rs.getTimestamp("thoiGianChieu").toLocalDateTime());
-                lc.setGiaVe(rs.getDouble("giaVe"));
-
+                LichChieuPhim lc = new LichChieuPhim(
+                        rs.getString("maLichChieu"),
+                        phim,
+                        phong,
+                        rs.getString("thoiGianChieu"),
+                        rs.getString("trangThai"),
+                        rs.getDate("ngayChieu").toLocalDate()
+                );
                 ds.add(lc);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }

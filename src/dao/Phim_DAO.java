@@ -1,32 +1,30 @@
 package dao;
 
 import connectDB.ConnectDB;
+import entity.LoaiPhim;
 import entity.Phim;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 
 public class Phim_DAO {
 
     public boolean themPhim(Phim phim) {
-        String sql = "INSERT INTO Phim (maPhim, tenPhim, theLoai, thoiLuong, daoDien, dienVien, ngayKhoiChieu, moTa, ngonNgu, doTuoiGioiHan, hinhAnh, giaVe) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Phim (maPhim, tenPhim, maLoai, thoiLuong, daoDien, ngayKhoiChieu, moTa, ngonNgu, doTuoiGioiHan, nuocSX) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, phim.getMaPhim());
             stmt.setString(2, phim.getTenPhim());
-            stmt.setString(3, phim.getTheLoai());
+            stmt.setString(3, phim.getTheLoai().getMaLoai());
             stmt.setInt(4, phim.getThoiLuong());
             stmt.setString(5, phim.getDaoDien());
-            stmt.setString(6, phim.getDienVien());
-            stmt.setDate(7, Date.valueOf(phim.getNgayKhoiChieu()));
-            stmt.setString(8, phim.getMoTa());
-            stmt.setString(9, phim.getNgonNgu());
-            stmt.setInt(10, phim.getDoTuoiGioiHan());
-            stmt.setString(11, phim.getHinhAnh());
-            stmt.setDouble(12, phim.getGiaVe());
+            stmt.setDate(6, Date.valueOf(phim.getNgayKhoiChieu()));
+            stmt.setString(7, phim.getMoTa());
+            stmt.setString(8, phim.getNgonNgu());
+            stmt.setInt(9, phim.getDoTuoiGioiHan());
+            stmt.setString(10, phim.getNuocSX());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -36,22 +34,20 @@ public class Phim_DAO {
     }
 
     public boolean capNhatPhim(Phim phim) {
-        String sql = "UPDATE Phim SET tenPhim=?, theLoai=?, thoiLuong=?, daoDien=?, dienVien=?, ngayKhoiChieu=?, moTa=?, ngonNgu=?, doTuoiGioiHan=?, hinhAnh=?, giaVe=? WHERE maPhim=?";
+        String sql = "UPDATE Phim SET tenPhim = ?, maLoai = ?, thoiLuong = ?, daoDien = ?, ngayKhoiChieu = ?, moTa = ?, ngonNgu = ?, doTuoiGioiHan = ?, nuocSX = ? WHERE maPhim = ?";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, phim.getTenPhim());
-            stmt.setString(2, phim.getTheLoai());
+            stmt.setString(2, phim.getTheLoai().getMaLoai());
             stmt.setInt(3, phim.getThoiLuong());
             stmt.setString(4, phim.getDaoDien());
-            stmt.setString(5, phim.getDienVien());
-            stmt.setDate(6, Date.valueOf(phim.getNgayKhoiChieu()));
-            stmt.setString(7, phim.getMoTa());
-            stmt.setString(8, phim.getNgonNgu());
-            stmt.setInt(9, phim.getDoTuoiGioiHan());
-            stmt.setString(10, phim.getHinhAnh());
-            stmt.setDouble(11, phim.getGiaVe());
-            stmt.setString(12, phim.getMaPhim());
+            stmt.setDate(5, Date.valueOf(phim.getNgayKhoiChieu()));
+            stmt.setString(6, phim.getMoTa());
+            stmt.setString(7, phim.getNgonNgu());
+            stmt.setInt(8, phim.getDoTuoiGioiHan());
+            stmt.setString(9, phim.getNuocSX());
+            stmt.setString(10, phim.getMaPhim());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -61,7 +57,7 @@ public class Phim_DAO {
     }
 
     public boolean xoaPhim(String maPhim) {
-        String sql = "DELETE FROM Phim WHERE maPhim=?";
+        String sql = "DELETE FROM Phim WHERE maPhim = ?";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -74,14 +70,29 @@ public class Phim_DAO {
     }
 
     public Phim timPhimTheoMa(String maPhim) {
-        String sql = "SELECT * FROM Phim WHERE maPhim=?";
+        String sql = "SELECT * FROM Phim WHERE maPhim = ?";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, maPhim);
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
-                return mapPhim(rs);
+                LoaiPhim loai = new LoaiPhim();
+                loai.setMaLoai(rs.getString("maLoai"));
+
+                return new Phim(
+                        rs.getString("maPhim"),
+                        rs.getString("tenPhim"),
+                        loai,
+                        rs.getInt("thoiLuong"),
+                        rs.getString("daoDien"),
+                        rs.getDate("ngayKhoiChieu").toLocalDate(),
+                        rs.getString("moTa"),
+                        rs.getString("ngonNgu"),
+                        rs.getInt("doTuoiGioiHan"),
+                        rs.getString("nuocSX")
+                );
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -97,28 +108,25 @@ public class Phim_DAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                ds.add(mapPhim(rs));
+                LoaiPhim loai = new LoaiPhim();
+                loai.setMaLoai(rs.getString("maLoai"));
+
+                ds.add(new Phim(
+                        rs.getString("maPhim"),
+                        rs.getString("tenPhim"),
+                        loai,
+                        rs.getInt("thoiLuong"),
+                        rs.getString("daoDien"),
+                        rs.getDate("ngayKhoiChieu").toLocalDate(),
+                        rs.getString("moTa"),
+                        rs.getString("ngonNgu"),
+                        rs.getInt("doTuoiGioiHan"),
+                        rs.getString("nuocSX")
+                ));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return ds;
-    }
-
-    private Phim mapPhim(ResultSet rs) throws SQLException {
-        Phim p = new Phim();
-        p.setMaPhim(rs.getString("maPhim"));
-        p.setTenPhim(rs.getString("tenPhim"));
-        p.setTheLoai(rs.getString("theLoai"));
-        p.setThoiLuong(rs.getInt("thoiLuong"));
-        p.setDaoDien(rs.getString("daoDien"));
-        p.setDienVien(rs.getString("dienVien"));
-        p.setNgayKhoiChieu(rs.getDate("ngayKhoiChieu").toLocalDate());
-        p.setMoTa(rs.getString("moTa"));
-        p.setNgonNgu(rs.getString("ngonNgu"));
-        p.setDoTuoiGioiHan(rs.getInt("doTuoiGioiHan"));
-        p.setHinhAnh(rs.getString("hinhAnh"));
-        p.setGiaVe(rs.getDouble("giaVe"));
-        return p;
     }
 }

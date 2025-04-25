@@ -10,15 +10,15 @@ import java.util.List;
 public class Ghe_DAO {
 
     public boolean themGhe(Ghe ghe) {
-        String sql = "INSERT INTO Ghe (maGhe, viTri, daDat) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Ghe (maGhe, viTri, trangThai) VALUES (?, ?, ?)";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, ghe.getMaGhe());
             stmt.setString(2, ghe.getViTri());
-            stmt.setBoolean(3, ghe.isDaDat());
-            return stmt.executeUpdate() > 0;
+            stmt.setBoolean(3, ghe.isTrangThai());
 
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -26,15 +26,15 @@ public class Ghe_DAO {
     }
 
     public boolean capNhatGhe(Ghe ghe) {
-        String sql = "UPDATE Ghe SET viTri = ?, daDat = ? WHERE maGhe = ?";
+        String sql = "UPDATE Ghe SET viTri = ?, trangThai = ? WHERE maGhe = ?";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, ghe.getViTri());
-            stmt.setBoolean(2, ghe.isDaDat());
+            stmt.setBoolean(2, ghe.isTrangThai());
             stmt.setString(3, ghe.getMaGhe());
-            return stmt.executeUpdate() > 0;
 
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -48,7 +48,6 @@ public class Ghe_DAO {
 
             stmt.setString(1, maGhe);
             return stmt.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -66,10 +65,9 @@ public class Ghe_DAO {
                 return new Ghe(
                         rs.getString("maGhe"),
                         rs.getString("viTri"),
-                        rs.getBoolean("daDat")
+                        rs.getBoolean("trangThai")
                 );
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -87,10 +85,9 @@ public class Ghe_DAO {
                 ds.add(new Ghe(
                         rs.getString("maGhe"),
                         rs.getString("viTri"),
-                        rs.getBoolean("daDat")
+                        rs.getBoolean("trangThai")
                 ));
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }

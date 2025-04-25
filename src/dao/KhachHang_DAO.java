@@ -2,27 +2,21 @@ package dao;
 
 import connectDB.ConnectDB;
 import entity.KhachHang;
-import entity.TaiKhoan;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class KhachHang_DAO {
 
     public boolean themKhachHang(KhachHang kh) {
-        String sql = "INSERT INTO KhachHang (maKhachHang, hoTen, soDienThoai, email, tenDangNhap) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO KhachHang (maKhachHang, tenKH) VALUES (?, ?)";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, kh.getMaKhachHang());
-            stmt.setString(2, kh.getHoTen());
-            stmt.setString(3, kh.getSoDienThoai());
-            stmt.setString(4, kh.getEmail());
-            stmt.setString(5, kh.getTaiKhoan().getTenDangNhap());
+            stmt.setString(2, kh.getTenKH());
 
             return stmt.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -30,18 +24,14 @@ public class KhachHang_DAO {
     }
 
     public boolean capNhatKhachHang(KhachHang kh) {
-        String sql = "UPDATE KhachHang SET hoTen = ?, soDienThoai = ?, email = ?, tenDangNhap = ? WHERE maKhachHang = ?";
+        String sql = "UPDATE KhachHang SET tenKH = ? WHERE maKhachHang = ?";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, kh.getHoTen());
-            stmt.setString(2, kh.getSoDienThoai());
-            stmt.setString(3, kh.getEmail());
-            stmt.setString(4, kh.getTaiKhoan().getTenDangNhap());
-            stmt.setString(5, kh.getMaKhachHang());
+            stmt.setString(1, kh.getTenKH());
+            stmt.setString(2, kh.getMaKhachHang());
 
             return stmt.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -55,7 +45,6 @@ public class KhachHang_DAO {
 
             stmt.setString(1, maKhachHang);
             return stmt.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -69,20 +58,13 @@ public class KhachHang_DAO {
 
             stmt.setString(1, maKhachHang);
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
-                KhachHang kh = new KhachHang();
-                kh.setMaKhachHang(rs.getString("maKhachHang"));
-                kh.setHoTen(rs.getString("hoTen"));
-                kh.setSoDienThoai(rs.getString("soDienThoai"));
-                kh.setEmail(rs.getString("email"));
-
-                TaiKhoan tk = new TaiKhoan();
-                tk.setTenDangNhap(rs.getString("tenDangNhap"));
-                kh.setTaiKhoan(tk);
-
-                return kh;
+                return new KhachHang(
+                        rs.getString("maKhachHang"),
+                        rs.getString("tenKH")
+                );
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -97,19 +79,11 @@ public class KhachHang_DAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                KhachHang kh = new KhachHang();
-                kh.setMaKhachHang(rs.getString("maKhachHang"));
-                kh.setHoTen(rs.getString("hoTen"));
-                kh.setSoDienThoai(rs.getString("soDienThoai"));
-                kh.setEmail(rs.getString("email"));
-
-                TaiKhoan tk = new TaiKhoan();
-                tk.setTenDangNhap(rs.getString("tenDangNhap"));
-                kh.setTaiKhoan(tk);
-
-                ds.add(kh);
+                ds.add(new KhachHang(
+                        rs.getString("maKhachHang"),
+                        rs.getString("tenKH")
+                ));
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }

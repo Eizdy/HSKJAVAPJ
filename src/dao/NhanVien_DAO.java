@@ -5,13 +5,14 @@ import entity.NhanVien;
 import entity.TaiKhoan;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.*;
 
 public class NhanVien_DAO {
 
     public boolean themNhanVien(NhanVien nv) {
-        String sql = "INSERT INTO NhanVien (maNhanVien, hoTen, soDienThoai, email, tenDangNhap) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO NhanVien (maNhanVien, hoTen, soDienThoai, email, tenDangNhap, chucVu, ngaySinh) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -20,8 +21,10 @@ public class NhanVien_DAO {
             stmt.setString(3, nv.getSoDienThoai());
             stmt.setString(4, nv.getEmail());
             stmt.setString(5, nv.getTaiKhoan().getTenDangNhap());
-            return stmt.executeUpdate() > 0;
+            stmt.setString(6, nv.getChucVu());
+            stmt.setDate(7, Date.valueOf(nv.getNgaySinh()));
 
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -29,7 +32,7 @@ public class NhanVien_DAO {
     }
 
     public boolean capNhatNhanVien(NhanVien nv) {
-        String sql = "UPDATE NhanVien SET hoTen = ?, soDienThoai = ?, email = ?, tenDangNhap = ? WHERE maNhanVien = ?";
+        String sql = "UPDATE NhanVien SET hoTen = ?, soDienThoai = ?, email = ?, tenDangNhap = ?, chucVu = ?, ngaySinh = ? WHERE maNhanVien = ?";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -37,9 +40,11 @@ public class NhanVien_DAO {
             stmt.setString(2, nv.getSoDienThoai());
             stmt.setString(3, nv.getEmail());
             stmt.setString(4, nv.getTaiKhoan().getTenDangNhap());
-            stmt.setString(5, nv.getMaNhanVien());
-            return stmt.executeUpdate() > 0;
+            stmt.setString(5, nv.getChucVu());
+            stmt.setDate(6, Date.valueOf(nv.getNgaySinh()));
+            stmt.setString(7, nv.getMaNhanVien());
 
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -53,7 +58,6 @@ public class NhanVien_DAO {
 
             stmt.setString(1, maNhanVien);
             return stmt.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -67,20 +71,21 @@ public class NhanVien_DAO {
 
             stmt.setString(1, maNhanVien);
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                NhanVien nv = new NhanVien();
-                nv.setMaNhanVien(rs.getString("maNhanVien"));
-                nv.setHoTen(rs.getString("hoTen"));
-                nv.setSoDienThoai(rs.getString("soDienThoai"));
-                nv.setEmail(rs.getString("email"));
 
+            if (rs.next()) {
                 TaiKhoan tk = new TaiKhoan();
                 tk.setTenDangNhap(rs.getString("tenDangNhap"));
-                nv.setTaiKhoan(tk);
 
-                return nv;
+                return new NhanVien(
+                        rs.getString("maNhanVien"),
+                        rs.getString("hoTen"),
+                        rs.getString("soDienThoai"),
+                        rs.getString("email"),
+                        tk,
+                        rs.getString("chucVu"),
+                        rs.getDate("ngaySinh").toLocalDate()
+                );
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -95,19 +100,19 @@ public class NhanVien_DAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                NhanVien nv = new NhanVien();
-                nv.setMaNhanVien(rs.getString("maNhanVien"));
-                nv.setHoTen(rs.getString("hoTen"));
-                nv.setSoDienThoai(rs.getString("soDienThoai"));
-                nv.setEmail(rs.getString("email"));
-
                 TaiKhoan tk = new TaiKhoan();
                 tk.setTenDangNhap(rs.getString("tenDangNhap"));
-                nv.setTaiKhoan(tk);
 
-                ds.add(nv);
+                ds.add(new NhanVien(
+                        rs.getString("maNhanVien"),
+                        rs.getString("hoTen"),
+                        rs.getString("soDienThoai"),
+                        rs.getString("email"),
+                        tk,
+                        rs.getString("chucVu"),
+                        rs.getDate("ngaySinh").toLocalDate()
+                ));
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }

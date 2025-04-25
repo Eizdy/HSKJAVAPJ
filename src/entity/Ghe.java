@@ -2,45 +2,39 @@ package entity;
 
 public class Ghe {
     private String maGhe;
-    private String viTri; // Ví dụ: A1, B2,...
-    private boolean daDat;
+    private String viTri; 
+    private boolean trangThai;
+	public Ghe() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+	public Ghe(String maGhe, String viTri, boolean trangThai) {
+		super();
+		this.maGhe = maGhe;
+		this.viTri = viTri;
+		this.trangThai = trangThai;
+	}
 
-    public Ghe() {
-    }
+	public String getMaGhe() {
+		return maGhe;
+	}
+	public void setMaGhe(String maGhe) {
+		this.maGhe = maGhe;
+	}
+	public String getViTri() {
+		return viTri;
+	}
+	public void setViTri(String viTri) {
+		this.viTri = viTri;
+	}
+	public boolean isTrangThai() {
+		return trangThai;
+	}
+	public void setTrangThai(boolean trangThai) {
+		this.trangThai = trangThai;
+	}
 
-    public Ghe(String maGhe, String viTri, boolean daDat) {
-        this.maGhe = maGhe;
-        this.viTri = viTri;
-        this.daDat = daDat;
-    }
-
-    public String getMaGhe() {
-        return maGhe;
-    }
-
-    public void setMaGhe(String maGhe) {
-        this.maGhe = maGhe;
-    }
-
-    public String getViTri() {
-        return viTri;
-    }
-
-    public void setViTri(String viTri) {
-        this.viTri = viTri;
-    }
-
-    public boolean isDaDat() {
-        return daDat;
-    }
-
-    public void setDaDat(boolean daDat) {
-        this.daDat = daDat;
-    }
-
-    @Override
-    public String toString() {
-        return viTri + (daDat ? " (Đã đặt)" : " (Còn trống)");
-    }
+   
 }
 
