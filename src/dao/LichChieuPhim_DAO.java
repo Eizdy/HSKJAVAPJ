@@ -122,4 +122,34 @@ public class LichChieuPhim_DAO {
         }
         return ds;
     }
+    
+    public List<LichChieuPhim> layLichChieuTheoNgay(LocalDate ngay) {
+        List<LichChieuPhim> ds = new ArrayList<>();
+        String sql = "SELECT * FROM LichChieuPhim WHERE ngayChieu = ?";
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, Date.valueOf(ngay));
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Phim phim = new Phim();
+                phim.setMaPhim(rs.getString("maPhim"));
+
+                PhongChieuPhim phong = new PhongChieuPhim();
+                phong.setMaPhong(rs.getString("maPhong"));
+
+                LichChieuPhim lich = new LichChieuPhim(
+                    rs.getString("maLichChieu"),
+                    phim,
+                    phong,
+                    rs.getString("thoiGianChieu"),
+                    rs.getString("trangThai"),
+                    rs.getDate("ngayChieu").toLocalDate()
+                );
+                ds.add(lich);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ds;
+    }
 }

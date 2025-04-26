@@ -8,20 +8,20 @@ import java.util.*;
 
 public class TaiKhoan_DAO {
 
-    public boolean themTaiKhoan(TaiKhoan tk) {
-        String sql = "INSERT INTO TaiKhoan (tenDangNhap, matKhau) VALUES (?, ?)";
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, tk.getTenDangNhap());
-            stmt.setString(2, tk.getMatKhau());
-
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+//    public boolean themTaiKhoan(TaiKhoan tk) {
+//        String sql = "INSERT INTO TaiKhoan (tenDangNhap, matKhau) VALUES (?, ?)";
+//        try (Connection conn = ConnectDB.getConnection();
+//             PreparedStatement stmt = conn.prepareStatement(sql)) {
+//
+//            stmt.setString(1, tk.getTenDangNhap());
+//            stmt.setString(2, tk.getMatKhau());
+//
+//            return stmt.executeUpdate() > 0;
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
 
     public boolean capNhatTaiKhoan(TaiKhoan tk) {
         String sql = "UPDATE TaiKhoan SET matKhau = ? WHERE tenDangNhap = ?";
@@ -89,4 +89,41 @@ public class TaiKhoan_DAO {
         }
         return ds;
     }
+    
+    public TaiKhoan dangNhap(String tenDangNhap, String matKhau) {
+        String sql = "SELECT * FROM TaiKhoan WHERE tenDangNhap = ? AND matKhau = ?";
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, tenDangNhap);
+            stmt.setString(2, matKhau);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new TaiKhoan(rs.getString("tenDangNhap"), rs.getString("matKhau"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    public boolean themTaiKhoan(TaiKhoan tk) {
+        String sql = "INSERT INTO TaiKhoan (tenDangNhap, matKhau) VALUES (?, ?)";
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, tk.getTenDangNhap());
+            stmt.setString(2, tk.getMatKhau());
+
+            int result = stmt.executeUpdate();
+            return result > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
 }

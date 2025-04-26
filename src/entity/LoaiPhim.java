@@ -5,29 +5,28 @@ public class LoaiPhim {
     private String tenLoai;
     private String moTa;
 
-
+    // Constructor đầy đủ 3 tham số
     public LoaiPhim(String maLoai, String tenLoai, String moTa) {
-		super();
-		this.maLoai = maLoai;
-		this.tenLoai = tenLoai;
-		this.moTa = moTa;
-	}
+        this.maLoai = maLoai;
+        this.tenLoai = tenLoai;
+        this.moTa = moTa;
+    }
 
-	public LoaiPhim() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	
+    // Constructor chỉ có mã loại
+    public LoaiPhim(String maLoai) {
+        this.maLoai = maLoai;
+    }
 
-	public String getMoTa() {
-		return moTa;
-	}
+    // Constructor có mã loại và tên loại
+    public LoaiPhim(String maLoai, String tenLoai) {
+        this.maLoai = maLoai;
+        this.tenLoai = tenLoai;
+    }
 
-	public void setMoTa(String moTa) {
-		this.moTa = moTa;
-	}
+    // Constructor mặc định
+    public LoaiPhim() {}
 
-	public String getMaLoai() {
+    public String getMaLoai() {
         return maLoai;
     }
 
@@ -41,6 +40,14 @@ public class LoaiPhim {
 
     public void setTenLoai(String tenLoai) {
         this.tenLoai = tenLoai;
+    }
+
+    public String getMoTa() {
+        return moTa;
+    }
+
+    public void setMoTa(String moTa) {
+        this.moTa = moTa;
     }
 
     @Override

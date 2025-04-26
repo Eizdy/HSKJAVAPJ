@@ -71,7 +71,8 @@ public class Phim_DAO {
     }
 
     public Phim timPhimTheoMa(String maPhim) {
-        String sql = "SELECT * FROM Phim WHERE maPhim = ?";
+        String sql = "SELECT p.maPhim, p.tenPhim, p.thoiLuong, p.daoDien, p.ngayKhoiChieu, p.moTa, p.ngonNgu, p.doTuoiGioiHan, p.nuocSX, l.maLoai, l.tenLoai " +
+                     "FROM Phim p JOIN LoaiPhim l ON p.maLoai = l.maLoai WHERE p.maPhim = ?";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -79,9 +80,7 @@ public class Phim_DAO {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                LoaiPhim loai = new LoaiPhim();
-                loai.setMaLoai(rs.getString("maLoai"));
-
+                LoaiPhim loai = new LoaiPhim(rs.getString("maLoai"), rs.getString("tenLoai"));
                 return new Phim(
                         rs.getString("maPhim"),
                         rs.getString("tenPhim"),
@@ -103,15 +102,45 @@ public class Phim_DAO {
 
     public List<Phim> layTatCaPhim() {
         List<Phim> ds = new ArrayList<>();
-        String sql = "SELECT * FROM Phim";
+        String sql = "SELECT p.maPhim, p.tenPhim, p.thoiLuong, p.daoDien, p.ngayKhoiChieu, p.moTa, p.ngonNgu, p.doTuoiGioiHan, p.nuocSX, l.maLoai, l.tenLoai " +
+                     "FROM Phim p JOIN LoaiPhim l ON p.maLoai = l.maLoai";
         try (Connection conn = ConnectDB.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                LoaiPhim loai = new LoaiPhim();
-                loai.setMaLoai(rs.getString("maLoai"));
+                LoaiPhim loai = new LoaiPhim(rs.getString("maLoai"), rs.getString("tenLoai"));
+                ds.add(new Phim(
+                        rs.getString("maPhim"),
+                        rs.getString("tenPhim"),
+                        loai,
+                        rs.getInt("thoiLuong"),
+                        rs.getString("daoDien"),
+                        rs.getDate("ngayKhoiChieu").toLocalDate(),
+                        rs.getString("moTa"),
+                        rs.getString("ngonNgu"),
+                        rs.getInt("doTuoiGioiHan"),
+                        rs.getString("nuocSX")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ds;
+    }
 
+    public List<Phim> timPhimTheoTen(String tenPhim) {
+        List<Phim> ds = new ArrayList<>();
+        String sql = "SELECT p.maPhim, p.tenPhim, p.thoiLuong, p.daoDien, p.ngayKhoiChieu, p.moTa, p.ngonNgu, p.doTuoiGioiHan, p.nuocSX, l.maLoai, l.tenLoai " +
+                     "FROM Phim p JOIN LoaiPhim l ON p.maLoai = l.maLoai WHERE tenPhim LIKE ?";
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, "%" + tenPhim + "%");
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                LoaiPhim loai = new LoaiPhim(rs.getString("maLoai"), rs.getString("tenLoai"));
                 ds.add(new Phim(
                         rs.getString("maPhim"),
                         rs.getString("tenPhim"),

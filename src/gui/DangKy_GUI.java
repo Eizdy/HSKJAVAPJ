@@ -1,9 +1,17 @@
 package gui;
 
 import javax.swing.*;
+
+import dao.NhanVien_DAO;
+import dao.TaiKhoan_DAO;
+import entity.NhanVien;
+import entity.TaiKhoan;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.*;
 
 public class DangKy_GUI extends JFrame {
@@ -262,11 +270,30 @@ public class DangKy_GUI extends JFrame {
         // Action listeners
         btnDangKy.addActionListener(e -> {
             if (validData()) {
-                JOptionPane.showMessageDialog(this, "Đăng ký thành công!");
-                // Handle registration logic here
+                String maNV = txtMaNV.getText().trim();
+                String tenNV = txtTenNV.getText().trim();
+                LocalDate ngaySinh = LocalDate.parse(txtNgaySinh.getText().trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                String dienThoai = txtDienThoai.getText().trim();
+                String email = txtEmail.getText().trim();
+                String chucVu = cboChucVu.getSelectedItem().toString();
+                String tenTK = txtTenTK.getText().trim();
+                String matKhau = new String(txtMatKhau.getPassword());
+
+                TaiKhoan tk = new TaiKhoan(tenTK, matKhau);
+                NhanVien nv = new NhanVien(maNV, tenNV, dienThoai, email, tk, chucVu, ngaySinh);
+
+                boolean tkOK = new TaiKhoan_DAO().themTaiKhoan(tk);
+                boolean nvOK = new NhanVien_DAO().themNhanVien(nv);
+
+                if (tkOK && nvOK) {
+                    JOptionPane.showMessageDialog(this, "Đăng ký thành công!");
+                    dispose();
+                    new DangNhap_GUI().setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Đăng ký thất bại. Vui lòng thử lại!");
+                }
             }
         });
-
         btnDangNhap.addActionListener(e -> {
             // Close the current DangKy_GUI frame
             dispose();
