@@ -12,9 +12,12 @@ import java.util.*;
 public class Phim_DAO {
 
     public boolean themPhim(Phim phim) {
-        String sql = "INSERT INTO Phim (maPhim, tenPhim, maLoai, thoiLuong, daoDien, ngayKhoiChieu, moTa, ngonNgu, doTuoiGioiHan, nuocSX) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        String sql = "INSERT INTO Phim (maPhim, tenPhim, theLoai, thoiLuong, daoDien, ngayKhoiChieu, moTa, ngonNgu, doTuoiGioiHan, nuocSX) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            conn = ConnectDB.getConnection();
+            stmt = conn.prepareStatement(sql);
 
             stmt.setString(1, phim.getMaPhim());
             stmt.setString(2, phim.getTenPhim());
@@ -30,14 +33,24 @@ public class Phim_DAO {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
 
     public boolean capNhatPhim(Phim phim) {
-        String sql = "UPDATE Phim SET tenPhim = ?, maLoai = ?, thoiLuong = ?, daoDien = ?, ngayKhoiChieu = ?, moTa = ?, ngonNgu = ?, doTuoiGioiHan = ?, nuocSX = ? WHERE maPhim = ?";
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        String sql = "UPDATE Phim SET tenPhim = ?, theLoai = ?, thoiLuong = ?, daoDien = ?, ngayKhoiChieu = ?, moTa = ?, ngonNgu = ?, doTuoiGioiHan = ?, nuocSX = ? WHERE maPhim = ?";
+        try {
+            conn = ConnectDB.getConnection();
+            stmt = conn.prepareStatement(sql);
 
             stmt.setString(1, phim.getTenPhim());
             stmt.setString(2, phim.getTheLoai().getMaLoai());
@@ -53,31 +66,51 @@ public class Phim_DAO {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
 
     public boolean xoaPhim(String maPhim) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
         String sql = "DELETE FROM Phim WHERE maPhim = ?";
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn = ConnectDB.getConnection();
+            stmt = conn.prepareStatement(sql);
 
             stmt.setString(1, maPhim);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
 
     public Phim timPhimTheoMa(String maPhim) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         String sql = "SELECT p.maPhim, p.tenPhim, p.thoiLuong, p.daoDien, p.ngayKhoiChieu, p.moTa, p.ngonNgu, p.doTuoiGioiHan, p.nuocSX, l.maLoai, l.tenLoai " +
-                     "FROM Phim p JOIN LoaiPhim l ON p.maLoai = l.maLoai WHERE p.maPhim = ?";
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+                     "FROM Phim p JOIN LoaiPhim l ON p.theLoai = l.maLoai WHERE p.maPhim = ?";
+        try {
+            conn = ConnectDB.getConnection();
+            stmt = conn.prepareStatement(sql);
             stmt.setString(1, maPhim);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             if (rs.next()) {
                 LoaiPhim loai = new LoaiPhim(rs.getString("maLoai"), rs.getString("tenLoai"));
@@ -96,17 +129,29 @@ public class Phim_DAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
 
     public List<Phim> layTatCaPhim() {
         List<Phim> ds = new ArrayList<>();
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
         String sql = "SELECT p.maPhim, p.tenPhim, p.thoiLuong, p.daoDien, p.ngayKhoiChieu, p.moTa, p.ngonNgu, p.doTuoiGioiHan, p.nuocSX, l.maLoai, l.tenLoai " +
-                     "FROM Phim p JOIN LoaiPhim l ON p.maLoai = l.maLoai";
-        try (Connection conn = ConnectDB.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+                     "FROM Phim p JOIN LoaiPhim l ON p.theLoai = l.maLoai";
+        try {
+            conn = ConnectDB.getConnection();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
                 LoaiPhim loai = new LoaiPhim(rs.getString("maLoai"), rs.getString("tenLoai"));
@@ -125,19 +170,30 @@ public class Phim_DAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return ds;
     }
 
     public List<Phim> timPhimTheoTen(String tenPhim) {
         List<Phim> ds = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         String sql = "SELECT p.maPhim, p.tenPhim, p.thoiLuong, p.daoDien, p.ngayKhoiChieu, p.moTa, p.ngonNgu, p.doTuoiGioiHan, p.nuocSX, l.maLoai, l.tenLoai " +
-                     "FROM Phim p JOIN LoaiPhim l ON p.maLoai = l.maLoai WHERE tenPhim LIKE ?";
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+                     "FROM Phim p JOIN LoaiPhim l ON p.theLoai = l.maLoai WHERE tenPhim LIKE ?";
+        try {
+            conn = ConnectDB.getConnection();
+            stmt = conn.prepareStatement(sql);
             stmt.setString(1, "%" + tenPhim + "%");
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 LoaiPhim loai = new LoaiPhim(rs.getString("maLoai"), rs.getString("tenLoai"));
@@ -156,6 +212,14 @@ public class Phim_DAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return ds;
     }

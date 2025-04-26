@@ -10,16 +10,14 @@ public class HoaDon {
     private LocalDate ngayLap;
     private int soLuong;
     private VeXemPhim ve;
-	public HoaDon() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	public HoaDon(String maHoaDon, LocalDate ngayLap, int soLuong, VeXemPhim ve) {
+    private NhanVien maNV;
+	public HoaDon(String maHoaDon, LocalDate ngayLap, int soLuong, VeXemPhim ve, NhanVien maNV) {
 		super();
 		this.maHoaDon = maHoaDon;
 		this.ngayLap = ngayLap;
 		this.soLuong = soLuong;
 		this.ve = ve;
+		this.maNV = maNV;
 	}
 	public String getMaHoaDon() {
 		return maHoaDon;
@@ -44,6 +42,16 @@ public class HoaDon {
 	}
 	public void setVe(VeXemPhim ve) {
 		this.ve = ve;
+	}
+	public NhanVien getMaNV() {
+		return maNV;
+	}
+	public void setMaNV(NhanVien maNV) {
+		this.maNV = maNV;
+	}
+	public HoaDon() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
     
 }

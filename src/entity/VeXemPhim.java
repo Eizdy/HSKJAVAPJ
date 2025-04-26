@@ -6,13 +6,16 @@ public class VeXemPhim {
     private Ghe ghe;
     private KhachHang khachHang;
     private double giaVe;
-	public VeXemPhim(String maVe, LichChieuPhim lichChieu, Ghe ghe, KhachHang khachHang, double giaVe) {
+    private NhanVien nhanVien;
+	public VeXemPhim(String maVe, LichChieuPhim lichChieu, Ghe ghe, KhachHang khachHang, double giaVe,
+			NhanVien nhanVien) {
 		super();
 		this.maVe = maVe;
 		this.lichChieu = lichChieu;
 		this.ghe = ghe;
 		this.khachHang = khachHang;
 		this.giaVe = giaVe;
+		this.nhanVien = nhanVien;
 	}
 	public VeXemPhim() {
 		super();
@@ -47,8 +50,13 @@ public class VeXemPhim {
 	}
 	public void setGiaVe(double giaVe) {
 		this.giaVe = giaVe;
-	} 
-
-    
+	}
+	public NhanVien getNhanVien() {
+		return nhanVien;
+	}
+	public void setNhanVien(NhanVien nhanVien) {
+		this.nhanVien = nhanVien;
+	}
+	
 }
 

@@ -8,23 +8,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LoaiPhim_DAO {
+	
+	public List<LoaiPhim> layTatCaLoaiPhim() {
+        List<LoaiPhim> dsLoaiPhim = new ArrayList<>();
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        String sql = "SELECT maLoai, tenLoai, moTa FROM LoaiPhim";
 
-    public List<LoaiPhim> layTatCaLoaiPhim() {
-        List<LoaiPhim> ds = new ArrayList<>();
-        String sql = "SELECT * FROM LoaiPhim";
-        try (Connection conn = ConnectDB.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try {
+            conn = ConnectDB.getConnection();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
                 String maLoai = rs.getString("maLoai");
                 String tenLoai = rs.getString("tenLoai");
-                ds.add(new LoaiPhim(maLoai, tenLoai));
+                String moTa = rs.getString("moTa");
+                dsLoaiPhim.add(new LoaiPhim(maLoai, tenLoai, moTa));
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-        return ds;
+        return dsLoaiPhim;
     }
 
     public LoaiPhim timLoaiPhimTheoMa(String maLoai) {
