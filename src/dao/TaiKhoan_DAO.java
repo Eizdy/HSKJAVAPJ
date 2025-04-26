@@ -125,25 +125,55 @@ public class TaiKhoan_DAO {
      *
      * @return A List of TaiKhoan objects.
      */
+//    public List<TaiKhoan> layTatCaTaiKhoan() {
+//        List<TaiKhoan> ds = new ArrayList<>();
+//        String sql = "SELECT * FROM TaiKhoan";
+//        try (Connection conn = ConnectDB.getConnection();
+//             Statement stmt = conn.createStatement();
+//             ResultSet rs = stmt.executeQuery(sql)) {
+//
+//            while (rs.next()) {
+//                ds.add(new TaiKhoan(
+//                        rs.getString("tenTK"), // Map tenTK to tenDangNhap
+//                        rs.getString("matKhau")
+//                ));
+//            }
+//        } catch (SQLException e) {
+//            throw new RuntimeException("Lỗi khi lấy danh sách tài khoản: " + e.getMessage(), e);
+//        }
+//        return ds;
+//    }
     public List<TaiKhoan> layTatCaTaiKhoan() {
-        List<TaiKhoan> ds = new ArrayList<>();
-        String sql = "SELECT * FROM TaiKhoan";
-        try (Connection conn = ConnectDB.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        List<TaiKhoan> dsTaiKhoan = new ArrayList<>();
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        String sql = "SELECT tenTK, matKhau FROM TaiKhoan";
+
+        try {
+            conn = ConnectDB.getConnection();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
-                ds.add(new TaiKhoan(
-                        rs.getString("tenTK"), // Map tenTK to tenDangNhap
-                        rs.getString("matKhau")
-                ));
+                String tenDangNhap = rs.getString("tenTK");
+                String matKhau = rs.getString("matKhau");
+                dsTaiKhoan.add(new TaiKhoan(tenDangNhap, matKhau));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Lỗi khi lấy danh sách tài khoản: " + e.getMessage(), e);
-        }
-        return ds;
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+               
+        } 
+        return dsTaiKhoan;
     }
-
     /**
      * Authenticates a user by checking tenDangNhap and matKhau.
      *
@@ -215,4 +245,5 @@ public class TaiKhoan_DAO {
             throw new IllegalArgumentException("Mật khẩu không được để trống.");
         }
     }
+
 }

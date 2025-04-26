@@ -12,19 +12,38 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
 
-/**
- * Data Access Object (DAO) for managing HoaDon entities in the database.
- * Provides methods to retrieve and search for invoices.
- */
 public class HoaDon_DAO {
 
     /**
-     * Retrieves an invoice from the database based on its ID (maHD).
+     * Adds a new invoice to the database.
      *
-     * @param maHD The ID of the invoice to find.
-     * @return The HoaDon object if found, null otherwise.
-     * @throws IllegalArgumentException if maHD is null or empty.
+     * @param hoaDon The HoaDon object to add.
+     * @return true if the invoice was added successfully, false otherwise.
+     * @throws RuntimeException if a database error occurs.
      */
+    public boolean themHoaDon(HoaDon hoaDon) {
+        String sql = "INSERT INTO HoaDon (maHD, ngayLap, soLuong, maVe, maNV) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, hoaDon.getMaHoaDon());
+            stmt.setDate(2, Date.valueOf(hoaDon.getNgayLap()));
+            stmt.setInt(3, hoaDon.getSoLuong());
+            stmt.setString(4, hoaDon.getVe().getMaVe());
+            stmt.setString(5, hoaDon.getMaNV().getMaNV()); // Ensure maNV is extracted correctly
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Hóa đơn " + hoaDon.getMaHoaDon() + " đã được lưu vào cơ sở dữ liệu.");
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi khi thêm hóa đơn: " + e.getMessage(), e);
+        }
+    }
+
+    // Existing methods (timHoaDonTheoMa, layTatCaHoaDon, getHoaDonTheoNgay) remain unchanged
     public HoaDon timHoaDonTheoMa(String maHD) {
         if (maHD == null || maHD.trim().isEmpty()) {
             throw new IllegalArgumentException("Mã hóa đơn không được để trống.");
@@ -57,7 +76,7 @@ public class HoaDon_DAO {
                 }
 
                 NhanVien nv = new NhanVien();
-                nv.setMaNhanVien(rs.getString("maNV"));
+                nv.setMaNV(rs.getString("maNV"));
 
                 return new HoaDon(
                         rs.getString("maHD"),
@@ -73,11 +92,6 @@ public class HoaDon_DAO {
         return null;
     }
 
-    /**
-     * Retrieves all invoices from the database.
-     *
-     * @return A List of HoaDon objects.
-     */
     public List<HoaDon> layTatCaHoaDon() {
         List<HoaDon> ds = new ArrayList<>();
         String sql = "SELECT hd.*, v.giaVe, v.maLichChieu, v.maKH " +
@@ -104,7 +118,7 @@ public class HoaDon_DAO {
                 }
 
                 NhanVien nv = new NhanVien();
-                nv.setMaNhanVien(rs.getString("maNV"));
+                nv.setMaNV(rs.getString("maNV"));
 
                 HoaDon hd = new HoaDon(
                         rs.getString("maHD"),
@@ -121,13 +135,6 @@ public class HoaDon_DAO {
         return ds;
     }
 
-    /**
-     * Retrieves invoices from the database based on the date of creation (ngayLap).
-     *
-     * @param ngayLap The date to filter invoices by (format: YYYY-MM-DD).
-     * @return A List of HoaDon objects matching the specified date.
-     * @throws IllegalArgumentException if ngayLap is null, empty, or not in the correct format.
-     */
     public List<HoaDon> getHoaDonTheoNgay(String ngayLap) {
         if (ngayLap == null || ngayLap.trim().isEmpty()) {
             throw new IllegalArgumentException("Ngày lập không được để trống.");
@@ -168,7 +175,7 @@ public class HoaDon_DAO {
                 }
 
                 NhanVien nv = new NhanVien();
-                nv.setMaNhanVien(rs.getString("maNV"));
+                nv.setMaNV(rs.getString("maNV"));
 
                 HoaDon hd = new HoaDon(
                         rs.getString("maHD"),

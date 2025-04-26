@@ -2,6 +2,7 @@ package dao;
 
 import connectDB.ConnectDB;
 import entity.Ghe;
+import entity.PhongChieuPhim;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,13 +11,14 @@ import java.util.List;
 public class Ghe_DAO {
 
     public boolean themGhe(Ghe ghe) {
-        String sql = "INSERT INTO Ghe (maGhe, viTri, trangThai) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Ghe (maGhe, viTri, trangThai, phong) VALUES (?, ?, ?, ?)";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, ghe.getMaGhe());
             stmt.setString(2, ghe.getViTri());
             stmt.setBoolean(3, ghe.isTrangThai());
+            stmt.setString(4, ghe.getPhong() != null ? ghe.getPhong().getMaPhong() : null); // Assuming PhongChieuPhim has getMaPhong()
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -26,13 +28,14 @@ public class Ghe_DAO {
     }
 
     public boolean capNhatGhe(Ghe ghe) {
-        String sql = "UPDATE Ghe SET viTri = ?, trangThai = ? WHERE maGhe = ?";
+        String sql = "UPDATE Ghe SET viTri = ?, trangThai = ?, phong = ? WHERE maGhe = ?";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, ghe.getViTri());
             stmt.setBoolean(2, ghe.isTrangThai());
-            stmt.setString(3, ghe.getMaGhe());
+            stmt.setString(3, ghe.getPhong() != null ? ghe.getPhong().getMaPhong() : null);
+            stmt.setString(4, ghe.getMaGhe());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -62,10 +65,15 @@ public class Ghe_DAO {
             stmt.setString(1, maGhe);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
+                // Fetch the phong value and create a PhongChieuPhim object
+                String maPhong = rs.getString("phong");
+                PhongChieuPhim phong = maPhong != null ? new PhongChieuPhim(maPhong) : null; // Simplified; you may need a DAO to fetch PhongChieuPhim
+
                 return new Ghe(
                         rs.getString("maGhe"),
                         rs.getString("viTri"),
-                        rs.getBoolean("trangThai")
+                        rs.getBoolean("trangThai"),
+                        phong
                 );
             }
         } catch (SQLException e) {
@@ -82,10 +90,15 @@ public class Ghe_DAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
+                // Fetch the phong value and create a PhongChieuPhim object
+                String maPhong = rs.getString("phong");
+                PhongChieuPhim phong = maPhong != null ? new PhongChieuPhim(maPhong) : null; // Simplified; you may need a DAO to fetch PhongChieuPhim
+
                 ds.add(new Ghe(
                         rs.getString("maGhe"),
                         rs.getString("viTri"),
-                        rs.getBoolean("trangThai")
+                        rs.getBoolean("trangThai"),
+                        phong
                 ));
             }
         } catch (SQLException e) {

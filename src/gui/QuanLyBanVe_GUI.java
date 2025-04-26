@@ -13,9 +13,7 @@ import entity.Phim;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class QuanLyBanVe_GUI extends JFrame {
 
@@ -26,6 +24,7 @@ public class QuanLyBanVe_GUI extends JFrame {
     private JButton btnChonGhe;
     private LichChieuPhim_DAO lichChieu_DAO = new LichChieuPhim_DAO();
     private Phim_DAO phimDAO = new Phim_DAO();
+    private List<LichChieuPhim> danhSachLich; // Store the list of showtimes for the selected date
 
     public QuanLyBanVe_GUI() {
         setTitle("Quản lý bán vé - Rạp Chiếu Phim");
@@ -62,7 +61,7 @@ public class QuanLyBanVe_GUI extends JFrame {
         menu.setBackground(new Color(25, 25, 25));
         menu.setPreferredSize(new Dimension(180, 0));
 
-        String[] items = {"Trang chủ", "Phim", "Suất chiếu","Nhân viên","Hoá đơn", "Bán vé", "Đăng xuất"};
+        String[] items = {"Trang chủ", "Phim", "Suất chiếu", "Nhân viên", "Hoá đơn", "Bán vé", "Đăng xuất"};
         for (String item : items) {
             JButton btn = new JButton(item);
             btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
@@ -77,14 +76,14 @@ public class QuanLyBanVe_GUI extends JFrame {
             btn.addActionListener(e -> {
                 dispose();
                 switch (item) {
-                	case "Trang chủ" -> new TrangChuRapChieuPhim_GUI().setVisible(true);
-                	case "Phim" -> new QuanLyPhim_GUI().setVisible(true);
-                	case "Suất chiếu" -> new SuatChieu_GUI().setVisible(true);
-                	case "Nhân viên" -> new QuanLyNhanVien_GUI().setVisible(true);
-                	case "Hoá đơn" -> new QuanLyHoaDon_GUI().setVisible(true);
-                	case "Bán vé" -> new QuanLyBanVe_GUI().setVisible(true);
-                	case "Đăng xuất" -> System.exit(0);
-                	default -> {}
+                    case "Trang chủ" -> new TrangChuRapChieuPhim_GUI().setVisible(true);
+                    case "Phim" -> new QuanLyPhim_GUI().setVisible(true);
+                    case "Suất chiếu" -> new SuatChieu_GUI().setVisible(true);
+                    case "Nhân viên" -> new QuanLyNhanVien_GUI().setVisible(true);
+                    case "Hoá đơn" -> new QuanLyHoaDon_GUI().setVisible(true);
+                    case "Bán vé" -> new QuanLyBanVe_GUI().setVisible(true);
+                    case "Đăng xuất" -> System.exit(0);
+                    default -> {}
                 }
             });
 
@@ -98,7 +97,9 @@ public class QuanLyBanVe_GUI extends JFrame {
     private JPanel createMainContent() {
         JPanel main = new JPanel(new BorderLayout(10, 10));
         main.setBorder(new EmptyBorder(10, 10, 10, 10));
+        main.setBackground(new Color(45, 45, 45));
 
+        // Top panel for date selection
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         topPanel.setBackground(new Color(45, 45, 45));
@@ -112,14 +113,33 @@ public class QuanLyBanVe_GUI extends JFrame {
         topPanel.add(dateChooser);
         topPanel.add(btnChonNgay);
 
-        modelPhim = new DefaultTableModel(new String[]{"Mã phim", "Tên phim", "Thời lượng", "Đạo diễn", "Thể loại"}, 0);
+        // Table to display movies and showtimes
+        modelPhim = new DefaultTableModel(new String[]{
+                "Mã lịch chiếu", "Tên phim", "Thời gian chiếu", "Ngày chiếu", "Thời lượng", "Đạo diễn", "Thể loại", "Ngôn ngữ"
+        }, 0);
         tablePhim = new JTable(modelPhim);
-        JScrollPane scrollPhim = new JScrollPane(tablePhim);
+        tablePhim.setBackground(new Color(60, 60, 60));
+        tablePhim.setForeground(Color.WHITE);
+        tablePhim.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        tablePhim.setRowHeight(22);
+        tablePhim.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                btnChonGhe.setEnabled(tablePhim.getSelectedRow() != -1);
+            }
+        });
 
+        JScrollPane scrollPhim = new JScrollPane(tablePhim);
+        scrollPhim.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.GRAY), "Danh sách phim và suất chiếu"));
+
+        // Button to select seats
         btnChonGhe = new JButton("Chọn ghế");
         btnChonGhe.setForeground(Color.WHITE);
+        btnChonGhe.setBackground(new Color(0, 120, 215));
+        btnChonGhe.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         btnChonGhe.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnChonGhe.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnChonGhe.setEnabled(false); // Initially disabled
         btnChonGhe.addActionListener(e -> chonGhe());
 
         JPanel centerPanel = new JPanel();
@@ -144,39 +164,50 @@ public class QuanLyBanVe_GUI extends JFrame {
         LocalDate ngay = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
         try {
-            List<LichChieuPhim> danhSachLich = lichChieu_DAO.layLichChieuTheoNgay(ngay);
-            Set<String> phimDaThem = new HashSet<>();
+            danhSachLich = lichChieu_DAO.layLichChieuTheoNgay(ngay);
+            if (danhSachLich.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Không có suất chiếu nào vào ngày " + ngay + ".");
+                return;
+            }
 
             for (LichChieuPhim lc : danhSachLich) {
-                String maPhim = lc.getPhim().getMaPhim();
-                if (!phimDaThem.contains(maPhim)) {
-                    Phim p = phimDAO.timPhimTheoMa(maPhim);
-                    if (p != null) {
-                        modelPhim.addRow(new Object[]{
-                                p.getMaPhim(),
-                                p.getTenPhim(),
-                                p.getThoiLuong(),
-                                p.getDaoDien(),
-                                p.getTheLoai() != null ? p.getTheLoai().getTenLoai() : ""
-                        });
-                        phimDaThem.add(maPhim);
-                    }
+                Phim p = phimDAO.timPhimTheoMa(lc.getPhim().getMaPhim());
+                if (p != null) {
+                    modelPhim.addRow(new Object[]{
+                            lc.getMaLichChieu(),
+                            p.getTenPhim(),
+                            lc.getThoiGianChieu(),
+                            lc.getNgayChieu(),
+                            p.getThoiLuong(),
+                            p.getDaoDien(),
+                            p.getTheLoai() != null ? p.getTheLoai().getTenLoai() : "",
+                            p.getNgonNgu()
+                    });
                 }
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi tải danh sách phim: " + e.getMessage());
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải danh sách phim: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void chonGhe() {
         int row = tablePhim.getSelectedRow();
         if (row == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một phim trước khi chọn ghế.");
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một suất chiếu trước khi chọn ghế.");
             return;
         }
-        String tenPhim = modelPhim.getValueAt(row, 1).toString();
-        new ChonGhe_GUI(tenPhim).setVisible(true);
+
+        String maLichChieu = modelPhim.getValueAt(row, 0).toString();
+        LichChieuPhim selectedLich = danhSachLich.stream()
+                .filter(lc -> lc.getMaLichChieu().equals(maLichChieu))
+                .findFirst()
+                .orElse(null);
+
+        if (selectedLich != null) {
+            new ChonGhe_GUI(selectedLich).setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy suất chiếu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private JPanel createFooter() {

@@ -3,63 +3,48 @@ package entity;
 import java.time.LocalDate;
 
 public class NhanVien {
-    private String maNhanVien;
-    private String hoTen;
-    private String soDienThoai;
-    private String email;
-    private TaiKhoan taiKhoan;
-    private String chucVu;
+    private String maNV;
+    private String tenNV;
     private LocalDate ngaySinh;
-	public NhanVien(String maNhanVien, String hoTen, String soDienThoai, String email, TaiKhoan taiKhoan, String chucVu,
-			LocalDate ngaySinh) {
+    private String dienThoai;
+    private String email;
+    private String chucVu;
+    private TaiKhoan tenTK;
+	public NhanVien(String maNV, String tenNV, LocalDate ngaySinh, String dienThoai, String email, String chucVu,
+			TaiKhoan tenTK) {
 		super();
-		this.maNhanVien = maNhanVien;
-		this.hoTen = hoTen;
-		this.soDienThoai = soDienThoai;
-		this.email = email;
-		this.taiKhoan = taiKhoan;
-		this.chucVu = chucVu;
+		this.maNV = maNV;
+		this.tenNV = tenNV;
 		this.ngaySinh = ngaySinh;
+		this.dienThoai = dienThoai;
+		this.email = email;
+		this.chucVu = chucVu;
+		this.tenTK = tenTK;
 	}
 	public NhanVien() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
-	public String getMaNhanVien() {
-		return maNhanVien;
-	}
-	public void setMaNhanVien(String maNhanVien) {
-		this.maNhanVien = maNhanVien;
-	}
-	public String getHoTen() {
-		return hoTen;
-	}
-	public void setHoTen(String hoTen) {
-		this.hoTen = hoTen;
-	}
-	public String getSoDienThoai() {
-		return soDienThoai;
-	}
-	public void setSoDienThoai(String soDienThoai) {
-		this.soDienThoai = soDienThoai;
-	}
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
+
+	public NhanVien(String maNV, String tenNV, LocalDate ngaySinh, String dienThoai, String email, String chucVu) {
+		super();
+		this.maNV = maNV;
+		this.tenNV = tenNV;
+		this.ngaySinh = ngaySinh;
+		this.dienThoai = dienThoai;
 		this.email = email;
-	}
-	public TaiKhoan getTaiKhoan() {
-		return taiKhoan;
-	}
-	public void setTaiKhoan(TaiKhoan taiKhoan) {
-		this.taiKhoan = taiKhoan;
-	}
-	public String getChucVu() {
-		return chucVu;
-	}
-	public void setChucVu(String chucVu) {
 		this.chucVu = chucVu;
+	}
+	public String getMaNV() {
+		return maNV;
+	}
+	public void setMaNV(String maNV) {
+		this.maNV = maNV;
+	}
+	public String getTenNV() {
+		return tenNV;
+	}
+	public void setTenNV(String tenNV) {
+		this.tenNV = tenNV;
 	}
 	public LocalDate getNgaySinh() {
 		return ngaySinh;
@@ -67,7 +52,32 @@ public class NhanVien {
 	public void setNgaySinh(LocalDate ngaySinh) {
 		this.ngaySinh = ngaySinh;
 	}
+	public String getDienThoai() {
+		return dienThoai;
+	}
+	public void setDienThoai(String dienThoai) {
+		this.dienThoai = dienThoai;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getChucVu() {
+		return chucVu;
+	}
+	public void setChucVu(String chucVu) {
+		this.chucVu = chucVu;
+	}
+	public TaiKhoan getTenTK() {
+		return tenTK;
+	}
+	public void setTenTK(TaiKhoan tenTK) {
+		this.tenTK = tenTK;
+	}
+	
 
-    
+	
 }
 

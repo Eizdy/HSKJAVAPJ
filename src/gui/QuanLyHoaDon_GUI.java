@@ -729,7 +729,7 @@ public class QuanLyHoaDon_GUI extends JFrame {
                     tongTien,
                     maLichChieu,
                     maKhachHang,
-                    hd.getMaNV().getMaNhanVien()
+                    hd.getMaNV().getMaNV()
             });
         }
     }
@@ -770,7 +770,7 @@ public class QuanLyHoaDon_GUI extends JFrame {
                                 tongTien,
                                 maLichChieu,
                                 maKhachHang,
-                                hd.getMaNV().getMaNhanVien()
+                                hd.getMaNV().getMaNV()
                         });
                     } else {
                         JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn.");
@@ -805,7 +805,7 @@ public class QuanLyHoaDon_GUI extends JFrame {
                                 tongTien,
                                 maLichChieu,
                                 maKhachHang,
-                                hd.getMaNV().getMaNhanVien()
+                                hd.getMaNV().getMaNV()
                         });
                     }
                     if (list.isEmpty()) {

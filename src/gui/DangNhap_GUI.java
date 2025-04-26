@@ -153,7 +153,7 @@ public class DangNhap_GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-//                SwingUtilities.invokeLater(() -> new DangKy_GUI().setVisible(true));
+                SwingUtilities.invokeLater(() -> new DangKyTaiKhoan_GUI().setVisible(true));
             }
         });
         pnlRight.add(btnRegister);

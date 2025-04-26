@@ -16,6 +16,11 @@ public class PhongChieuPhim {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	public PhongChieuPhim(String maPhong) {
+		super();
+		this.maPhong = maPhong;
+	}
 	public String getMaPhong() {
 		return maPhong;
 	}
