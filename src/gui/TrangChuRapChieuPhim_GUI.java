@@ -4,14 +4,8 @@ import java.awt.*;
 import java.net.URL;
 import javax.swing.*;
 import javax.swing.border.*;
-import javax.swing.table.DefaultTableModel;
 
 public class TrangChuRapChieuPhim_GUI extends JFrame {
-    private DefaultTableModel tableModel;
-    private JTable tableVe;
-    private JTextField txtTenKH, txtSDT, txtTongTien;
-    private JComboBox<String> cboPTThanhToan;
-    private int[] sttCounter = {1};
 
     public TrangChuRapChieuPhim_GUI() {
         setTitle("Trang chủ - Quản lý Rạp Chiếu Phim");
@@ -48,7 +42,7 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
         menu.setBackground(new Color(25, 25, 25));
         menu.setPreferredSize(new Dimension(180, 0));
 
-        String[] items = {"Trang chủ", "Phim", "Suất chiếu","Nhân viên","Hoá đơn", "Bán vé", "Thống kê", "Đăng xuất"};
+        String[] items = {"Trang chủ", "Phim", "Suất chiếu", "Nhân viên", "Hoá đơn", "Bán vé", "Đăng xuất"};
         for (String item : items) {
             JButton btn = new JButton(item);
             btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
@@ -63,15 +57,14 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
             btn.addActionListener(e -> {
                 dispose();
                 switch (item) {
-                	case "Trang chủ" -> new TrangChuRapChieuPhim_GUI().setVisible(true);
-                	case "Phim" -> new QuanLyPhim_GUI().setVisible(true);
-                	//case "Suất chiếu" -> new QuanLySuatChieu_GUI().setVisible(true);
-                	case "Nhân viên" -> new QuanLyNhanVien_GUI().setVisible(true);
-                	//case "Hoá đơn" -> new QuanLyHoaDon_GUI().setVisible(true);
-                	//case "Bán vé" -> new BanVe_GUI().setVisible(true);
-                	//case "Thống kê" -> new ThongKe_GUI().setVisible(true);
-                	case "Đăng xuất" -> System.exit(0);
-                	default -> {}
+                    case "Trang chủ" -> new TrangChuRapChieuPhim_GUI().setVisible(true);
+                    case "Phim" -> new QuanLyPhim_GUI().setVisible(true);
+                    case "Suất chiếu" -> new SuatChieu_GUI().setVisible(true);
+                    case "Nhân viên" -> new QuanLyNhanVien_GUI().setVisible(true);
+                    case "Hoá đơn" -> new QuanLyHoaDon_GUI().setVisible(true);
+                    case "Bán vé" -> new QuanLyBanVe_GUI().setVisible(true);
+                    case "Đăng xuất" -> System.exit(0);
+                    default -> {}
                 }
             });
 
@@ -87,6 +80,27 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
         main.setBorder(new EmptyBorder(10, 10, 10, 10));
         main.setBackground(new Color(45, 45, 45));
 
+        // Banner Panel
+        JPanel bannerPanel = new JPanel();
+        bannerPanel.setBackground(new Color(45, 45, 45));
+        bannerPanel.setBorder(new EmptyBorder(0, 0, 10, 0)); // Add some spacing below the banner
+
+        URL bannerURL = getClass().getResource("/img/banner4.jpg");
+        if (bannerURL != null) {
+            ImageIcon bannerIcon = new ImageIcon(bannerURL);
+            // Scale the banner to fit the width of the window (minus sidebar and padding)
+            Image scaledBanner = bannerIcon.getImage().getScaledInstance(1050, 350, Image.SCALE_SMOOTH);
+            JLabel bannerLabel = new JLabel(new ImageIcon(scaledBanner));
+            bannerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            bannerPanel.add(bannerLabel);
+        } else {
+            JLabel bannerLabel = new JLabel("Không tìm thấy ảnh banner", SwingConstants.CENTER);
+            bannerLabel.setForeground(Color.WHITE);
+            bannerLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            bannerPanel.add(bannerLabel);
+        }
+
+        // Movie List Panel
         JPanel phimPanel = new JPanel(new GridLayout(0, 3, 20, 20));
         phimPanel.setBackground(new Color(45, 45, 45));
 
@@ -98,73 +112,28 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
                 "endgame.jpg", "boGia.jpg", "avatar.jpg",
                 "joker.jpg", "Batman.jpg", "yeu.jpg"
         };
+        String[] descriptions = {
+                "The epic conclusion to the Avengers saga.",
+                "A thief who steals secrets through dreams.",
+                "A dark and gritty take on the Dark Knight.",
+                "A journey through space to save humanity.",
+                "The origin story of the iconic villain.",
+                "The long-awaited sequel to the 2009 film."
+        };
 
         for (int i = 0; i < phimNames.length; i++) {
-            phimPanel.add(createMovieCard(phimNames[i], 75000, imagePaths[i]));
+            phimPanel.add(createMovieCard(phimNames[i], descriptions[i], imagePaths[i]));
         }
 
         JScrollPane scrollPhim = new JScrollPane(phimPanel);
         scrollPhim.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "🎥 Danh sách phim"));
         scrollPhim.setBackground(new Color(45, 45, 45));
 
-        JPanel rightPanel = new JPanel();
-        rightPanel.setPreferredSize(new Dimension(400, 600));
-        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-        rightPanel.setBackground(new Color(35, 35, 35));
-
-        txtTenKH = createTextField("👤 Tên khách hàng");
-        txtSDT = createTextField("📞 Số điện thoại");
-
-        String[] cols = {"STT", "Phim", "Số vé", "Giá"};
-        tableModel = new DefaultTableModel(cols, 0);
-        tableVe = new JTable(tableModel);
-        tableVe.setBackground(new Color(60, 60, 60));
-        tableVe.setForeground(Color.WHITE);
-        tableVe.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        tableVe.setRowHeight(22);
-
-        JScrollPane sp = new JScrollPane(tableVe);
-        sp.setBorder(BorderFactory.createTitledBorder("🎟️ Vé đã chọn"));
-
-        cboPTThanhToan = new JComboBox<>(new String[]{"Tiền mặt", "Chuyển khoản"});
-        cboPTThanhToan.setBorder(BorderFactory.createTitledBorder("💳 Phương thức thanh toán"));
-        cboPTThanhToan.setBackground(new Color(70, 70, 70));
-        cboPTThanhToan.setForeground(Color.WHITE);
-
-        txtTongTien = createTextField("💰 Tổng tiền");
-        txtTongTien.setEditable(false);
-
-        JButton btnThanhToan = new JButton("Thanh toán");
-        btnThanhToan.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnThanhToan.setBackground(new Color(0, 120, 215));
-        btnThanhToan.setForeground(Color.WHITE);
-        btnThanhToan.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnThanhToan.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        rightPanel.add(txtTenKH);
-        rightPanel.add(Box.createVerticalStrut(10));
-        rightPanel.add(txtSDT);
-        rightPanel.add(Box.createVerticalStrut(10));
-        rightPanel.add(sp);
-        rightPanel.add(Box.createVerticalStrut(10));
-        rightPanel.add(cboPTThanhToan);
-        rightPanel.add(Box.createVerticalStrut(10));
-        rightPanel.add(txtTongTien);
-        rightPanel.add(Box.createVerticalStrut(10));
-        rightPanel.add(btnThanhToan);
-
+        // Add banner and movie list to the main panel
+        main.add(bannerPanel, BorderLayout.NORTH);
         main.add(scrollPhim, BorderLayout.CENTER);
-        main.add(rightPanel, BorderLayout.EAST);
 
         return main;
-    }
-
-    private JTextField createTextField(String title) {
-        JTextField field = new JTextField();
-        field.setBorder(BorderFactory.createTitledBorder(title));
-        field.setBackground(new Color(60, 60, 60));
-        field.setForeground(Color.WHITE);
-        return field;
     }
 
     private JPanel createFooter() {
@@ -179,7 +148,7 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
         return footer;
     }
 
-    private JPanel createMovieCard(String tenPhim, int giaVe, String imageFileName) {
+    private JPanel createMovieCard(String tenPhim, String description, String imageFileName) {
         JPanel card = new JPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(BorderFactory.createCompoundBorder(
@@ -187,7 +156,7 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
                 new EmptyBorder(10, 10, 10, 10)
         ));
         card.setBackground(new Color(55, 55, 55));
-        card.setPreferredSize(new Dimension(200, 300));
+        card.setPreferredSize(new Dimension(200, 350));
 
         URL imgURL = getClass().getResource("/img/" + imageFileName);
         if (imgURL != null) {
@@ -207,42 +176,17 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
         lblTen.setForeground(Color.WHITE);
         lblTen.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JSpinner spn = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1));
-        spn.setMaximumSize(new Dimension(60, 25));
-        spn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel lblDescription = new JLabel("<html><div style='text-align: center;'>" + description + "</div></html>", SwingConstants.CENTER);
+        lblDescription.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblDescription.setForeground(Color.LIGHT_GRAY);
+        lblDescription.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JButton btn = new JButton("Chọn");
-        btn.setBackground(new Color(100, 149, 237));
-        btn.setForeground(Color.WHITE);
-        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        btn.addActionListener(e -> {
-            int sl = (int) spn.getValue();
-            if (sl > 0) {
-                int stt = sttCounter[0]++;
-                int tong = sl * giaVe;
-                tableModel.addRow(new Object[]{stt, tenPhim, sl, tong});
-                capNhatTongTien();
-            }
-        });
-
-        card.add(Box.createVerticalStrut(5));
+        card.add(Box.createVerticalStrut(10));
         card.add(lblTen);
         card.add(Box.createVerticalStrut(5));
-        card.add(new JLabel("🎫 Số vé:", SwingConstants.CENTER));
-        card.add(spn);
-        card.add(Box.createVerticalStrut(5));
-        card.add(btn);
-        return card;
-    }
+        card.add(lblDescription);
 
-    private void capNhatTongTien() {
-        int tong = 0;
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            tong += (int) tableModel.getValueAt(i, 3);
-        }
-        txtTongTien.setText(tong + " VND");
+        return card;
     }
 
     public static void main(String[] args) {

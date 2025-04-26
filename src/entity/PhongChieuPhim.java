@@ -40,7 +40,10 @@ public class PhongChieuPhim {
 	public void setTrangThaiPhongChieu(boolean trangThaiPhongChieu) {
 		this.trangThaiPhongChieu = trangThaiPhongChieu;
 	}
-
+	@Override
+    public String toString() {
+        return tenPhong;
+    }
     
 }
 

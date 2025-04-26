@@ -8,39 +8,39 @@ import java.util.*;
 
 public class PhongChieuPhim_DAO {
 
-    public boolean themPhong(PhongChieuPhim phong) {
-        String sql = "INSERT INTO PhongChieuPhim (maPhong, tenPhong, soLuongGhe) VALUES (?, ?, ?)";
+    public boolean themPhong(PhongChieuPhim phong) throws SQLException {
+        String sql = "INSERT INTO PhongChieuPhim (maPhong, tenPhong, trangThaiPhongChieu, soLuongGhe) VALUES (?, ?, ?, ?)";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, phong.getMaPhong());
             stmt.setString(2, phong.getTenPhong());
-            stmt.setInt(3, phong.getSoLuongGhe());
+            stmt.setBoolean(3, phong.isTrangThaiPhongChieu());
+            stmt.setInt(4, phong.getSoLuongGhe());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Lỗi khi thêm phòng chiếu: " + e.getMessage(), e);
         }
-        return false;
     }
 
-    public boolean capNhatPhong(PhongChieuPhim phong) {
-        String sql = "UPDATE PhongChieuPhim SET tenPhong = ?, soLuongGhe = ? WHERE maPhong = ?";
+    public boolean capNhatPhong(PhongChieuPhim phong) throws SQLException {
+        String sql = "UPDATE PhongChieuPhim SET tenPhong = ?, trangThaiPhongChieu = ?, soLuongGhe = ? WHERE maPhong = ?";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, phong.getTenPhong());
-            stmt.setInt(2, phong.getSoLuongGhe());
-            stmt.setString(3, phong.getMaPhong());
+            stmt.setBoolean(2, phong.isTrangThaiPhongChieu());
+            stmt.setInt(3, phong.getSoLuongGhe());
+            stmt.setString(4, phong.getMaPhong());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Lỗi khi cập nhật phòng chiếu: " + e.getMessage(), e);
         }
-        return false;
     }
 
-    public boolean xoaPhong(String maPhong) {
+    public boolean xoaPhong(String maPhong) throws SQLException {
         String sql = "DELETE FROM PhongChieuPhim WHERE maPhong = ?";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -48,33 +48,33 @@ public class PhongChieuPhim_DAO {
             stmt.setString(1, maPhong);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Lỗi khi xóa phòng chiếu: " + e.getMessage(), e);
         }
-        return false;
     }
 
-    public PhongChieuPhim timPhongTheoMa(String maPhong) {
+    public PhongChieuPhim timPhongTheoMa(String maPhong) throws SQLException {
         String sql = "SELECT * FROM PhongChieuPhim WHERE maPhong = ?";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, maPhong);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return new PhongChieuPhim(
-                        rs.getString("maPhong"),
-                        rs.getString("tenPhong"),
-                        rs.getInt("soLuongGhe")
-                );
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new PhongChieuPhim(
+                            rs.getString("maPhong"),
+                            rs.getString("tenPhong"),
+                            rs.getInt("soLuongGhe"),
+                            rs.getBoolean("trangThaiPhongChieu")
+                    );
+                }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Lỗi khi tìm phòng chiếu theo mã: " + e.getMessage(), e);
         }
         return null;
     }
 
-    public List<PhongChieuPhim> layTatCaPhong() {
+    public List<PhongChieuPhim> layTatCaPhongChieu() throws SQLException {
         List<PhongChieuPhim> ds = new ArrayList<>();
         String sql = "SELECT * FROM PhongChieuPhim";
         try (Connection conn = ConnectDB.getConnection();
@@ -85,11 +85,12 @@ public class PhongChieuPhim_DAO {
                 ds.add(new PhongChieuPhim(
                         rs.getString("maPhong"),
                         rs.getString("tenPhong"),
-                        rs.getInt("soLuongGhe")
+                        rs.getInt("soLuongGhe"),
+                        rs.getBoolean("trangThaiPhongChieu")
                 ));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Lỗi khi lấy tất cả phòng chiếu: " + e.getMessage(), e);
         }
         return ds;
     }
