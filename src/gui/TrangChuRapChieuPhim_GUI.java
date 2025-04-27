@@ -42,7 +42,7 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
         menu.setBackground(new Color(25, 25, 25));
         menu.setPreferredSize(new Dimension(180, 0));
 
-        String[] items = {"Trang chủ", "Phim", "Suất chiếu", "Nhân viên", "Hoá đơn", "Bán vé", "Đăng xuất"};
+        String[] items = {"Trang chủ", "Phim", "Suất chiếu", "Nhân viên", "Hoá đơn", "Bán vé", "Thống kê","Đăng xuất"};
         for (String item : items) {
             JButton btn = new JButton(item);
             btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
@@ -63,6 +63,7 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
                     case "Nhân viên" -> new QuanLyNhanVien_GUI().setVisible(true);
                     case "Hoá đơn" -> new QuanLyHoaDon_GUI().setVisible(true);
                     case "Bán vé" -> new QuanLyBanVe_GUI().setVisible(true);
+                    case "Thống kê" -> new QuanLyThongKe_GUI().setVisible(true);
                     case "Đăng xuất" -> System.exit(0);
                     default -> {}
                 }
@@ -105,20 +106,20 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
         phimPanel.setBackground(new Color(45, 45, 45));
 
         String[] phimNames = {
-                "Avengers: Endgame", "Inception", "The Batman",
-                "Interstellar", "Joker", "Avatar 2"
+                "Avengers: Endgame", "Bố Gìa", "Avatar 2",
+                "Joker", "The Batman", "Yêu nhầm bạn thân"
         };
         String[] imagePaths = {
                 "endgame.jpg", "boGia.jpg", "avatar.jpg",
                 "joker.jpg", "Batman.jpg", "yeu.jpg"
         };
         String[] descriptions = {
-                "The epic conclusion to the Avengers saga.",
-                "A thief who steals secrets through dreams.",
-                "A dark and gritty take on the Dark Knight.",
-                "A journey through space to save humanity.",
-                "The origin story of the iconic villain.",
-                "The long-awaited sequel to the 2009 film."
+                "Avengers: Endgame là bộ phim siêu anh hùng của Marvel Studios, nối tiếp hậu quả sau cú búng tay hủy diệt của Thanos. Các Avengers còn sống cùng nhau thực hiện kế hoạch du hành thời gian để cứu lấy vũ trụ. Phim đánh dấu cái kết hoành tráng cho hành trình 11 năm của Vũ trụ Điện ảnh Marvel.",
+                "Bố Già (2021) là bộ phim tâm lý – gia đình do Trấn Thành đạo diễn và đóng chính. Phim kể về những mâu thuẫn, yêu thương và hy sinh trong gia đình Ba Sang – Quắn tại khu xóm nghèo Sài Gòn. Với cốt truyện giàu cảm xúc, Bố Già đã chạm đến trái tim hàng triệu khán giả Việt Nam.",
+                "Avatar của đạo diễn James Cameron là bộ phim khoa học viễn tưởng nổi tiếng, kể về cuộc phiêu lưu của Jake Sully trên hành tinh Pandora. Bộ phim gây ấn tượng với hiệu ứng hình ảnh đột phá và thông điệp về môi trường, hòa hợp thiên nhiên. Đây cũng là một trong những phim có doanh thu cao nhất mọi thời đại.",
+                "Joker do Todd Phillips đạo diễn, là câu chuyện về Arthur Fleck – một người đàn ông cô đơn biến thành kẻ phản diện khét tiếng ở Gotham. Phim khai thác sâu sắc tâm lý nhân vật với màn trình diễn xuất sắc của Joaquin Phoenix. \"Joker\" nhận nhiều giải thưởng lớn, trong đó có Oscar cho Nam diễn viên chính xuất sắc nhất.",
+                "The Batman do Matt Reeves đạo diễn, mang đến một góc nhìn đen tối và trinh thám hơn về Người Dơi – Bruce Wayne. Bộ phim tập trung vào hành trình điều tra những vụ án phức tạp tại Gotham, đối đầu với tên tội phạm The Riddler. Robert Pattinson đã mang đến hình ảnh một Batman trẻ trung nhưng đầy chiều sâu.",
+                "Yêu Nhầm Bạn Thân là bộ phim hài - lãng mạn Thái Lan kể về Palm và Gink, hai người bạn thân suốt hơn 10 năm nhưng lại vướng vào những cảm xúc vượt quá tình bạn. Phim mang đến những khoảnh khắc hài hước, dễ thương xen lẫn những phút giây cảm động. Đây là một trong những phim tình cảm ăn khách nhất châu Á năm 2019."
         };
 
         for (int i = 0; i < phimNames.length; i++) {

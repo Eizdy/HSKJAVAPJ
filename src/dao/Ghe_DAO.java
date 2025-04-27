@@ -18,7 +18,7 @@ public class Ghe_DAO {
             stmt.setString(1, ghe.getMaGhe());
             stmt.setString(2, ghe.getViTri());
             stmt.setBoolean(3, ghe.isTrangThai());
-            stmt.setString(4, ghe.getPhong() != null ? ghe.getPhong().getMaPhong() : null); // Assuming PhongChieuPhim has getMaPhong()
+            stmt.setString(4, ghe.getPhong() != null ? ghe.getPhong().getMaPhong() : null);
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -65,9 +65,8 @@ public class Ghe_DAO {
             stmt.setString(1, maGhe);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                // Fetch the phong value and create a PhongChieuPhim object
                 String maPhong = rs.getString("phong");
-                PhongChieuPhim phong = maPhong != null ? new PhongChieuPhim(maPhong) : null; // Simplified; you may need a DAO to fetch PhongChieuPhim
+                PhongChieuPhim phong = maPhong != null ? new PhongChieuPhim(maPhong) : null;
 
                 return new Ghe(
                         rs.getString("maGhe"),
@@ -90,9 +89,8 @@ public class Ghe_DAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                // Fetch the phong value and create a PhongChieuPhim object
                 String maPhong = rs.getString("phong");
-                PhongChieuPhim phong = maPhong != null ? new PhongChieuPhim(maPhong) : null; // Simplified; you may need a DAO to fetch PhongChieuPhim
+                PhongChieuPhim phong = maPhong != null ? new PhongChieuPhim(maPhong) : null;
 
                 ds.add(new Ghe(
                         rs.getString("maGhe"),
@@ -105,5 +103,93 @@ public class Ghe_DAO {
             e.printStackTrace();
         }
         return ds;
+    }
+
+    public List<String> layViTriGheTheoMaHoaDon(String maHoaDon) throws SQLException {
+        List<String> viTriGheList = new ArrayList<>();
+        
+        // Step 1: Get the maVe and maLichChieu from the HoaDon
+        String sqlGetMaVeAndLichChieu = 
+            "SELECT vxp.maVe, vxp.maLichChieu " +
+            "FROM HoaDon hd " +
+            "JOIN VeXemPhim vxp ON hd.maVe = vxp.maVe " +
+            "WHERE hd.maHD = ?";
+        
+        String maLichChieu = null;
+        String baseMaVe = null;
+        
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sqlGetMaVeAndLichChieu)) {
+            
+            stmt.setString(1, maHoaDon);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    baseMaVe = rs.getString("maVe");
+                    maLichChieu = rs.getString("maLichChieu");
+                } else {
+                    throw new SQLException("Không tìm thấy hóa đơn với mã: " + maHoaDon);
+                }
+            }
+        }
+
+        // Step 2: Get the number of tickets (soLuong) from HoaDon
+        String sqlGetSoLuong = "SELECT soLuong FROM HoaDon WHERE maHD = ?";
+        int soLuong;
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sqlGetSoLuong)) {
+            
+            stmt.setString(1, maHoaDon);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    soLuong = rs.getInt("soLuong");
+                } else {
+                    throw new SQLException("Không tìm thấy số lượng vé cho hóa đơn: " + maHoaDon);
+                }
+            }
+        }
+
+        // Step 3: Extract the numeric part of baseMaVe (e.g., "V001" -> 1)
+        int baseMaVeNumber;
+        try {
+            baseMaVeNumber = Integer.parseInt(baseMaVe.substring(1));
+        } catch (NumberFormatException e) {
+            throw new SQLException("Mã vé không hợp lệ: " + baseMaVe);
+        }
+
+        // Step 4: Generate the range of maVe values (e.g., V001, V002, V003 for soLuong = 3)
+        List<String> maVeList = new ArrayList<>();
+        for (int i = 0; i < soLuong; i++) {
+            String maVe = String.format("V%03d", baseMaVeNumber + i);
+            maVeList.add(maVe);
+        }
+
+        // Step 5: Fetch viTri for all VeXemPhim entries with the generated maVe values and matching maLichChieu
+        String sqlGetViTri = 
+            "SELECT g.viTri " +
+            "FROM Ghe g " +
+            "JOIN VeXemPhim vxp ON g.maGhe = vxp.maGhe " +
+            "WHERE vxp.maVe IN (" + String.join(",", java.util.Collections.nCopies(maVeList.size(), "?")) + ") " +
+            "AND vxp.maLichChieu = ?";
+
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sqlGetViTri)) {
+            
+            // Set the maVe parameters
+            for (int i = 0; i < maVeList.size(); i++) {
+                stmt.setString(i + 1, maVeList.get(i));
+            }
+            // Set the maLichChieu parameter
+            stmt.setString(maVeList.size() + 1, maLichChieu);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    viTriGheList.add(rs.getString("viTri"));
+                }
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Lỗi khi lấy vị trí ghế theo mã hóa đơn: " + e.getMessage(), e);
+        }
+
+        return viTriGheList;
     }
 }

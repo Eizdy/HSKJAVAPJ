@@ -64,27 +64,17 @@ public class SuatChieu_GUI extends JFrame {
         menu.setBackground(new Color(25, 25, 25));
         menu.setPreferredSize(new Dimension(180, 0));
 
-        String[] items = {"Trang chủ", "Phim", "Suất chiếu", "Nhân viên", "Hoá đơn", "Bán vé", "Đăng xuất"};
+        String[] items = {"Trang chủ", "Phim", "Suất chiếu", "Nhân viên", "Hoá đơn", "Bán vé", "Thống kê","Đăng xuất"};
         for (String item : items) {
             JButton btn = new JButton(item);
             btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
             btn.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-            btn.setForeground(item.equals("Đăng xuất") ? Color.RED : Color.WHITE);
+            btn.setForeground(Color.WHITE);
             btn.setBackground(new Color(40, 40, 40));
             btn.setFocusPainted(false);
             btn.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
             btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-            btn.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    btn.setBackground(new Color(60, 60, 60));
-                }
-
-                public void mouseExited(java.awt.event.MouseEvent evt) {
-                    btn.setBackground(new Color(40, 40, 40));
-                }
-            });
 
             btn.addActionListener(e -> {
                 dispose();
@@ -95,11 +85,13 @@ public class SuatChieu_GUI extends JFrame {
                     case "Nhân viên" -> new QuanLyNhanVien_GUI().setVisible(true);
                     case "Hoá đơn" -> new QuanLyHoaDon_GUI().setVisible(true);
                     case "Bán vé" -> new QuanLyBanVe_GUI().setVisible(true);
+                    case "Thống kê" -> new QuanLyThongKe_GUI().setVisible(true);
                     case "Đăng xuất" -> System.exit(0);
                     default -> {}
                 }
             });
 
+            if (item.equals("Đăng xuất")) btn.setForeground(Color.RED);
             menu.add(Box.createVerticalStrut(10));
             menu.add(btn);
         }

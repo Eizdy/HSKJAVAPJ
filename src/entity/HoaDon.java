@@ -53,6 +53,25 @@ public class HoaDon {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-    
+	// Tính tổng tiền hóa đơn
+		public double getTongTien() {
+		    if (ve != null) {
+		        return ve.getGiaVe() * soLuong;
+		    }
+		    return 0;
+		}
+
+		// Sinh ghi chú đơn giản cho hóa đơn
+		public String getGhiChu() {
+		    return "Hóa đơn ngày " + ngayLap.toString();
+		}
+
+		// Lấy tên nhân viên (tạm thời lấy mã nhân viên nếu chưa có tên)
+		public String getTenNV() {
+		    if (maNV != null) {
+		        return maNV.getMaNV(); // Nếu sau này NhanVien có getTenNV() thì thay thế ở đây
+		    }
+		    return "Không rõ";
+		}
 }
 

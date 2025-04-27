@@ -217,4 +217,34 @@ public class LichChieuPhim_DAO {
         }
         return ds;
     }
+
+    public Map<String, Object> layThongTinHoaDonTheoMaLichChieu(String maLichChieu) throws SQLException {
+        String sql = "SELECT p.tenPhim, lp.tenLoai, lc.thoiGianChieu, lc.ngayChieu, p.thoiLuong, pc.tenPhong " +
+                     "FROM LichChieuPhim lc " +
+                     "JOIN Phim p ON lc.maPhim = p.maPhim " +
+                     "JOIN LoaiPhim lp ON p.theLoai = lp.maLoai " +
+                     "JOIN PhongChieuPhim pc ON lc.maPhong = pc.maPhong " +
+                     "WHERE lc.maLichChieu = ?";
+        
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, maLichChieu);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Map<String, Object> invoiceDetails = new HashMap<>();
+                    invoiceDetails.put("tenPhim", rs.getString("tenPhim"));
+                    invoiceDetails.put("theLoai", rs.getString("tenLoai"));
+                    invoiceDetails.put("thoiGianChieu", rs.getString("thoiGianChieu"));
+                    invoiceDetails.put("ngayChieu", rs.getDate("ngayChieu") != null ? rs.getDate("ngayChieu").toLocalDate() : null);
+                    invoiceDetails.put("thoiLuong", rs.getInt("thoiLuong"));
+                    invoiceDetails.put("tenPhong", rs.getString("tenPhong"));
+                    return invoiceDetails;
+                }
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Lỗi khi lấy thông tin hóa đơn theo mã lịch chiếu: " + e.getMessage(), e);
+        }
+        return null;
+    }
 }

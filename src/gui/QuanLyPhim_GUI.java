@@ -59,7 +59,7 @@ public class QuanLyPhim_GUI extends JFrame {
         menu.setBackground(new Color(25, 25, 25));
         menu.setPreferredSize(new Dimension(180, 0));
 
-        String[] items = {"Trang chủ", "Phim", "Suất chiếu","Nhân viên","Hoá đơn", "Bán vé", "Đăng xuất"};
+        String[] items = {"Trang chủ", "Phim", "Suất chiếu", "Nhân viên", "Hoá đơn", "Bán vé", "Thống kê","Đăng xuất"};
         for (String item : items) {
             JButton btn = new JButton(item);
             btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
@@ -74,14 +74,15 @@ public class QuanLyPhim_GUI extends JFrame {
             btn.addActionListener(e -> {
                 dispose();
                 switch (item) {
-                	case "Trang chủ" -> new TrangChuRapChieuPhim_GUI().setVisible(true);
-                	case "Phim" -> new QuanLyPhim_GUI().setVisible(true);
-                	case "Suất chiếu" -> new SuatChieu_GUI().setVisible(true);
-                	case "Nhân viên" -> new QuanLyNhanVien_GUI().setVisible(true);
-                	case "Hoá đơn" -> new QuanLyHoaDon_GUI().setVisible(true);
-                	case "Bán vé" -> new QuanLyBanVe_GUI().setVisible(true);
-                	case "Đăng xuất" -> System.exit(0);
-                	default -> {}
+                    case "Trang chủ" -> new TrangChuRapChieuPhim_GUI().setVisible(true);
+                    case "Phim" -> new QuanLyPhim_GUI().setVisible(true);
+                    case "Suất chiếu" -> new SuatChieu_GUI().setVisible(true);
+                    case "Nhân viên" -> new QuanLyNhanVien_GUI().setVisible(true);
+                    case "Hoá đơn" -> new QuanLyHoaDon_GUI().setVisible(true);
+                    case "Bán vé" -> new QuanLyBanVe_GUI().setVisible(true);
+                    case "Thống kê" -> new QuanLyThongKe_GUI().setVisible(true);
+                    case "Đăng xuất" -> System.exit(0);
+                    default -> {}
                 }
             });
 

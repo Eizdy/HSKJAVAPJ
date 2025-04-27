@@ -191,4 +191,65 @@ public class HoaDon_DAO {
         }
         return ds;
     }
+    public List<HoaDon> getHoaDonTheoThang(int thang, int nam) {
+        List<HoaDon> ds = new ArrayList<>();
+        String sql = "SELECT hd.*, v.giaVe FROM HoaDon hd LEFT JOIN VeXemPhim v ON hd.maVe = v.maVe WHERE MONTH(ngayLap) = ? AND YEAR(ngayLap) = ?";
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, thang);
+            stmt.setInt(2, nam);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                VeXemPhim ve = new VeXemPhim();
+                ve.setMaVe(rs.getString("maVe"));
+                ve.setGiaVe(rs.getDouble("giaVe"));
+
+                NhanVien nv = new NhanVien();
+                nv.setMaNV(rs.getString("maNV"));
+
+                HoaDon hd = new HoaDon(
+                        rs.getString("maHD"),
+                        rs.getDate("ngayLap").toLocalDate(),
+                        rs.getInt("soLuong"),
+                        ve,
+                        nv
+                );
+                ds.add(hd);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi khi lấy hóa đơn theo tháng: " + e.getMessage(), e);
+        }
+        return ds;
+    }
+    
+    public List<HoaDon> getHoaDonTheoKhoangNgay(LocalDate tuNgay, LocalDate denNgay) {
+        List<HoaDon> ds = new ArrayList<>();
+        String sql = "SELECT hd.*, v.giaVe FROM HoaDon hd LEFT JOIN VeXemPhim v ON hd.maVe = v.maVe WHERE ngayLap BETWEEN ? AND ?";
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, Date.valueOf(tuNgay));
+            stmt.setDate(2, Date.valueOf(denNgay));
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                VeXemPhim ve = new VeXemPhim();
+                ve.setMaVe(rs.getString("maVe"));
+                ve.setGiaVe(rs.getDouble("giaVe"));
+
+                NhanVien nv = new NhanVien();
+                nv.setMaNV(rs.getString("maNV"));
+
+                HoaDon hd = new HoaDon(
+                        rs.getString("maHD"),
+                        rs.getDate("ngayLap").toLocalDate(),
+                        rs.getInt("soLuong"),
+                        ve,
+                        nv
+                );
+                ds.add(hd);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi khi lấy hóa đơn theo khoảng ngày: " + e.getMessage(), e);
+        }
+        return ds;
+    }
 }

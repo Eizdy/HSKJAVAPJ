@@ -172,7 +172,7 @@ public class ChonGhe_GUI extends JFrame {
             NhanVien nhanVien = new NhanVien();
             nhanVien.setMaNV("NV01");
 
-            // Generate base numbers for maVe and maHoaDon
+            // Generate base numbers for maVe
             int baseMaVeNumber;
             try {
                 String lastMaVe = generateNextMaVe();
@@ -222,6 +222,7 @@ public class ChonGhe_GUI extends JFrame {
 
             // Create a single HoaDon with the total quantity
             if (!tickets.isEmpty()) {
+                // Link HoaDon to the first VeXemPhim
                 HoaDon hoaDon = new HoaDon(maHoaDon, LocalDate.now(), selectedSeats.size(), tickets.get(0), nhanVien);
                 System.out.println("Tạo hóa đơn: " + maHoaDon + ", maVe: " + tickets.get(0).getMaVe() + ", maNV: " + nhanVien.getMaNV() + ", soLuong: " + selectedSeats.size());
 

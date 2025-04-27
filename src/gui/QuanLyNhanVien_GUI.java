@@ -8,7 +8,6 @@ import javax.swing.table.DefaultTableModel;
 import dao.TaiKhoan_DAO;
 import dao.NhanVien_DAO;
 import entity.NhanVien;
-import entity.Phim;
 import entity.TaiKhoan;
 import java.util.List;
 
@@ -20,11 +19,12 @@ import java.util.regex.Pattern;
 public class QuanLyNhanVien_GUI extends JFrame {
     private JTable tblNhanVien;
     private DefaultTableModel modelNhanVien;
-    private JTextField txtMaNV, txtHoTen, txtSoDienThoai, txtEmail;
+    private JTextField txtMaNV, txtHoTen;
     private JCheckBox chkMaNV, chkHoTen;
     private JButton btnTimKiem, btnXoaTrang, btnThem, btnXoa, btnSua, btnHienTatCa;
     private NhanVien_DAO nhanVienDAO = new NhanVien_DAO();
     private TaiKhoan_DAO taiKhoanDAO = new TaiKhoan_DAO();
+
     public QuanLyNhanVien_GUI() {
         setTitle("Nhân viên - Quản lý Rạp Chiếu Phim");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -61,7 +61,7 @@ public class QuanLyNhanVien_GUI extends JFrame {
         menu.setBackground(new Color(25, 25, 25));
         menu.setPreferredSize(new Dimension(180, 0));
 
-        String[] items = {"Trang chủ", "Phim", "Suất chiếu","Nhân viên","Hoá đơn", "Bán vé", "Đăng xuất"};
+        String[] items = {"Trang chủ", "Phim", "Suất chiếu", "Nhân viên", "Hoá đơn", "Bán vé", "Thống kê", "Đăng xuất"};
         for (String item : items) {
             JButton btn = new JButton(item);
             btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
@@ -76,14 +76,15 @@ public class QuanLyNhanVien_GUI extends JFrame {
             btn.addActionListener(e -> {
                 dispose();
                 switch (item) {
-                	case "Trang chủ" -> new TrangChuRapChieuPhim_GUI().setVisible(true);
-                	case "Phim" -> new QuanLyPhim_GUI().setVisible(true);
-                	case "Suất chiếu" -> new SuatChieu_GUI().setVisible(true);
-                	case "Nhân viên" -> new QuanLyNhanVien_GUI().setVisible(true);
-                	case "Hoá đơn" -> new QuanLyHoaDon_GUI().setVisible(true);
-                	case "Bán vé" -> new QuanLyBanVe_GUI().setVisible(true);
-                	case "Đăng xuất" -> System.exit(0);
-                	default -> {}
+                    case "Trang chủ" -> new TrangChuRapChieuPhim_GUI().setVisible(true);
+                    case "Phim" -> new QuanLyPhim_GUI().setVisible(true);
+                    case "Suất chiếu" -> new SuatChieu_GUI().setVisible(true);
+                    case "Nhân viên" -> new QuanLyNhanVien_GUI().setVisible(true);
+                    case "Hoá đơn" -> new QuanLyHoaDon_GUI().setVisible(true);
+                    case "Bán vé" -> new QuanLyBanVe_GUI().setVisible(true);
+                    case "Thống kê" -> new QuanLyThongKe_GUI().setVisible(true);
+                    case "Đăng xuất" -> System.exit(0);
+                    default -> {}
                 }
             });
 
@@ -114,7 +115,7 @@ public class QuanLyNhanVien_GUI extends JFrame {
         tblNhanVien.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
-                                                         boolean hasFocus, int row, int column) {
+                                                          boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 c.setBackground(isSelected ? new Color(0, 120, 215) : new Color(60, 60, 60));
                 c.setForeground(Color.WHITE);
@@ -142,24 +143,28 @@ public class QuanLyNhanVien_GUI extends JFrame {
         chkMaNV.setBackground(new Color(45, 45, 45));
         chkMaNV.setForeground(Color.WHITE);
         chkMaNV.setSelected(true);
+        chkMaNV.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         txtMaNV = new JTextField();
         txtMaNV.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         txtMaNV.setBorder(BorderFactory.createTitledBorder("Mã nhân viên"));
         txtMaNV.setBackground(new Color(60, 60, 60));
         txtMaNV.setForeground(Color.WHITE);
-        txtMaNV.setEnabled(true); // ban đầu được bật
+        txtMaNV.setCaretColor(Color.WHITE);
+        txtMaNV.setEnabled(true);
 
         chkHoTen = new JCheckBox("Tra cứu theo họ tên");
         chkHoTen.setBackground(new Color(45, 45, 45));
         chkHoTen.setForeground(Color.WHITE);
         chkHoTen.setSelected(false);
+        chkHoTen.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         txtHoTen = new JTextField();
         txtHoTen.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         txtHoTen.setBorder(BorderFactory.createTitledBorder("Họ tên"));
         txtHoTen.setBackground(new Color(60, 60, 60));
         txtHoTen.setForeground(Color.WHITE);
+        txtHoTen.setCaretColor(Color.WHITE);
         txtHoTen.setEnabled(false);
 
         chkMaNV.addActionListener(e -> {
@@ -168,11 +173,11 @@ public class QuanLyNhanVien_GUI extends JFrame {
                 txtHoTen.setText("");
                 txtMaNV.setEnabled(true);
                 txtHoTen.setEnabled(false);
-            }
-            else {
-            	txtMaNV.setEnabled(false);
+            } else {
+                txtMaNV.setEnabled(false);
             }
         });
+
         chkHoTen.addActionListener(e -> {
             if (chkHoTen.isSelected()) {
                 chkMaNV.setSelected(false);
@@ -180,7 +185,7 @@ public class QuanLyNhanVien_GUI extends JFrame {
                 txtHoTen.setEnabled(true);
                 txtMaNV.setEnabled(false);
             } else {
-            	txtHoTen.setEnabled(false);
+                txtHoTen.setEnabled(false);
             }
         });
 
@@ -194,11 +199,9 @@ public class QuanLyNhanVien_GUI extends JFrame {
         btnXoaTrang.setForeground(Color.WHITE);
         actionPanel.add(btnTimKiem);
         actionPanel.add(btnXoaTrang);
-        
-        
+
         btnTimKiem.addActionListener(e -> searchNhanVien());
 
-        
         btnXoaTrang.addActionListener(e -> {
             txtMaNV.setText("");
             txtHoTen.setText("");
@@ -283,7 +286,7 @@ public class QuanLyNhanVien_GUI extends JFrame {
         south.add(btnSua);
         south.add(btnHienTatCa);
         main.add(south, BorderLayout.SOUTH);
-        
+
         btnTimKiem.addActionListener(e -> searchNhanVien());
         return main;
     }
@@ -292,21 +295,20 @@ public class QuanLyNhanVien_GUI extends JFrame {
         try {
             String maNV = txtMaNV.getText().trim();
             String tenNV = txtHoTen.getText().trim();
-            
-            // Validate input
+
             if (!chkMaNV.isSelected() && !chkHoTen.isSelected()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng chọn một tiêu chí tìm kiếm!");
                 return;
             }
-            
+
             if ((chkMaNV.isSelected() && maNV.isEmpty()) || 
                 (chkHoTen.isSelected() && tenNV.isEmpty())) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập thông tin tìm kiếm!");
                 return;
             }
 
-            modelNhanVien.setRowCount(0); // Clear table
-            
+            modelNhanVien.setRowCount(0);
+
             boolean found = false;
             int rowIndex = 0;
             int selectIndex = -1;
@@ -349,9 +351,8 @@ public class QuanLyNhanVien_GUI extends JFrame {
 
             if (!found) {
                 JOptionPane.showMessageDialog(this, "Không tìm thấy nhân viên phù hợp!");
-                loadDataToTable(); // Reload all data if no results
+                loadDataToTable();
             } else if (selectIndex >= 0) {
-                // Select and scroll to the found row
                 tblNhanVien.setRowSelectionInterval(selectIndex, selectIndex);
                 tblNhanVien.scrollRectToVisible(tblNhanVien.getCellRect(selectIndex, 0, true));
             }
@@ -360,9 +361,10 @@ public class QuanLyNhanVien_GUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Lỗi khi tìm kiếm: " + e.getMessage());
         }
     }
+
     private String generateNextMaNV() {
         try {
-            int currentCount = nhanVienDAO.layTatCaNhanVien().size(); 
+            int currentCount = nhanVienDAO.layTatCaNhanVien().size();
             return String.format("NV%02d", currentCount + 1);
         } catch (Exception e) {
             e.printStackTrace();
@@ -370,6 +372,7 @@ public class QuanLyNhanVien_GUI extends JFrame {
             return "NV01";
         }
     }
+
     private void showAddNhanVienDialog() {
         JDialog dialog = new JDialog(this, "Thêm Nhân Viên", true);
         dialog.setSize(800, 600);
@@ -391,10 +394,10 @@ public class QuanLyNhanVien_GUI extends JFrame {
         formPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         JPanel basicInfoPanel = new JPanel();
-        basicInfoPanel.setLayout(new GridLayout(0, 1, 10, 10)); // 1 field/row
+        basicInfoPanel.setLayout(new GridLayout(0, 1, 10, 10));
         basicInfoPanel.setBackground(new Color(45, 45, 45));
         basicInfoPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Color.GRAY), "Thông tin cơ bản", 
+            BorderFactory.createLineBorder(Color.GRAY), "Thông tin cơ bản",
             0, 0, new Font("Segoe UI", Font.BOLD, 14), Color.LIGHT_GRAY));
 
         JTextField txtMaNV = createTextField("Mã nhân viên", 16);
@@ -420,7 +423,6 @@ public class QuanLyNhanVien_GUI extends JFrame {
             List<TaiKhoan> danhSachTaiKhoan = taiKhoanDAO.layTatCaTaiKhoan();
             if (danhSachTaiKhoan != null && !danhSachTaiKhoan.isEmpty()) {
                 for (TaiKhoan taiKhoan : danhSachTaiKhoan) {
-                    System.out.println("Tài khoản: " + taiKhoan.getTenDangNhap());
                     cboTaiKhoan.addItem(taiKhoan);
                 }
             } else {
@@ -434,7 +436,7 @@ public class QuanLyNhanVien_GUI extends JFrame {
         JPanel taiKhoanPanel = new JPanel(new BorderLayout());
         taiKhoanPanel.setBackground(new Color(45, 45, 45));
         taiKhoanPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Color.GRAY), "Tài khoản", 
+            BorderFactory.createLineBorder(Color.GRAY), "Tài khoản",
             0, 0, new Font("Segoe UI", Font.PLAIN, 12), Color.LIGHT_GRAY));
         taiKhoanPanel.add(cboTaiKhoan, BorderLayout.CENTER);
 
@@ -467,18 +469,23 @@ public class QuanLyNhanVien_GUI extends JFrame {
             try {
                 String maNV = txtMaNV.getText().trim();
                 String tenNV = txtTenNV.getText().trim();
-                LocalDate ngaySinh = LocalDate.parse(txtNgaySinh.getText().trim());
+                String ngaySinhStr = txtNgaySinh.getText().trim();
                 String dienThoai = txtDienThoai.getText().trim();
                 String email = txtEmail.getText().trim();
                 String chucVu = txtChucVu.getText().trim();
                 TaiKhoan taiKhoan = (TaiKhoan) cboTaiKhoan.getSelectedItem();
 
-                if (maNV.isEmpty() || tenNV.isEmpty() || txtNgaySinh.getText().trim().isEmpty() 
+                if (maNV.isEmpty() || tenNV.isEmpty() || ngaySinhStr.isEmpty()
                     || dienThoai.isEmpty() || email.isEmpty() || chucVu.isEmpty() || taiKhoan == null) {
                     JOptionPane.showMessageDialog(dialog, "Vui lòng nhập đầy đủ các trường bắt buộc!");
                     return;
                 }
 
+                if (!validateNhanVienInputs(tenNV, ngaySinhStr, dienThoai, email, chucVu)) {
+                    return;
+                }
+
+                LocalDate ngaySinh = LocalDate.parse(ngaySinhStr);
                 NhanVien nhanVien = new NhanVien(maNV, tenNV, ngaySinh, dienThoai, email, chucVu, taiKhoan);
 
                 if (nhanVienDAO.themNhanVien(nhanVien)) {
@@ -506,6 +513,45 @@ public class QuanLyNhanVien_GUI extends JFrame {
 
         dialog.add(buttonPanel, BorderLayout.SOUTH);
         dialog.setVisible(true);
+    }
+
+    private boolean validateNhanVienInputs(String tenNV, String ngaySinhStr, String dienThoai, String email, String chucVu) {
+        String namePattern = "^[\\p{L} .'-]+$";
+        String phonePattern = "^0\\d{9}$";
+        String emailPattern = "^[\\w.-]+@[\\w.-]+\\.\\w{2,}$";
+
+        if (!tenNV.matches(namePattern)) {
+            JOptionPane.showMessageDialog(null, "Tên nhân viên không hợp lệ! Chỉ được chứa chữ cái và dấu cách.");
+            return false;
+        }
+
+        if (!chucVu.matches(namePattern)) {
+            JOptionPane.showMessageDialog(null, "Chức vụ không hợp lệ! Chỉ được chứa chữ cái và dấu cách.");
+            return false;
+        }
+
+        if (!dienThoai.matches(phonePattern)) {
+            JOptionPane.showMessageDialog(null, "Số điện thoại không hợp lệ! Phải bắt đầu bằng 0 và có 10 chữ số.");
+            return false;
+        }
+
+        if (!email.matches(emailPattern)) {
+            JOptionPane.showMessageDialog(null, "Email không hợp lệ!");
+            return false;
+        }
+
+        try {
+            LocalDate ngaySinh = LocalDate.parse(ngaySinhStr);
+            if (ngaySinh.isAfter(LocalDate.now())) {
+                JOptionPane.showMessageDialog(null, "Ngày sinh không được lớn hơn ngày hiện tại!");
+                return false;
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Ngày sinh không hợp lệ! Định dạng đúng là yyyy-MM-dd.");
+            return false;
+        }
+
+        return true;
     }
 
     private void showEditEmployeeDialog() {
@@ -540,15 +586,15 @@ public class QuanLyNhanVien_GUI extends JFrame {
         formPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         JPanel basicInfoPanel = new JPanel();
-        basicInfoPanel.setLayout(new GridLayout(0, 1, 10, 10)); // 1 field/row
+        basicInfoPanel.setLayout(new GridLayout(0, 1, 10, 10));
         basicInfoPanel.setBackground(new Color(45, 45, 45));
         basicInfoPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Color.GRAY), "Thông tin cơ bản", 
+            BorderFactory.createLineBorder(Color.GRAY), "Thông tin cơ bản",
             0, 0, new Font("Segoe UI", Font.BOLD, 14), Color.LIGHT_GRAY));
 
         JTextField txtMaNV = createTextField("Mã nhân viên", 16);
-        txtMaNV.setText(rowData[0]); 
-        txtMaNV.setEditable(false); 
+        txtMaNV.setText(rowData[0]);
+        txtMaNV.setEditable(false);
 
         JTextField txtTenNV = createTextField("Tên nhân viên", 16);
         txtTenNV.setText(rowData[1]);
@@ -596,7 +642,7 @@ public class QuanLyNhanVien_GUI extends JFrame {
         JPanel taiKhoanPanel = new JPanel(new BorderLayout());
         taiKhoanPanel.setBackground(new Color(45, 45, 45));
         taiKhoanPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Color.GRAY), "Tài khoản", 
+            BorderFactory.createLineBorder(Color.GRAY), "Tài khoản",
             0, 0, new Font("Segoe UI", Font.PLAIN, 12), Color.LIGHT_GRAY));
         taiKhoanPanel.add(cboTaiKhoan, BorderLayout.CENTER);
 
@@ -629,18 +675,23 @@ public class QuanLyNhanVien_GUI extends JFrame {
             try {
                 String maNV = txtMaNV.getText().trim();
                 String tenNV = txtTenNV.getText().trim();
-                LocalDate ngaySinh = LocalDate.parse(txtNgaySinh.getText().trim());
+                String ngaySinhStr = txtNgaySinh.getText().trim();
                 String dienThoai = txtDienThoai.getText().trim();
                 String email = txtEmail.getText().trim();
                 String chucVu = txtChucVu.getText().trim();
                 TaiKhoan taiKhoan = (TaiKhoan) cboTaiKhoan.getSelectedItem();
 
-                if (tenNV.isEmpty() || txtNgaySinh.getText().trim().isEmpty() 
+                if (tenNV.isEmpty() || ngaySinhStr.isEmpty()
                     || dienThoai.isEmpty() || email.isEmpty() || chucVu.isEmpty() || taiKhoan == null) {
                     JOptionPane.showMessageDialog(dialog, "Vui lòng nhập đầy đủ các trường bắt buộc!");
                     return;
                 }
 
+                if (!validateNhanVienInputs(tenNV, ngaySinhStr, dienThoai, email, chucVu)) {
+                    return;
+                }
+
+                LocalDate ngaySinh = LocalDate.parse(ngaySinhStr);
                 NhanVien nhanVien = new NhanVien(maNV, tenNV, ngaySinh, dienThoai, email, chucVu, taiKhoan);
 
                 if (nhanVienDAO.capNhatNhanVien(nhanVien)) {
@@ -670,8 +721,6 @@ public class QuanLyNhanVien_GUI extends JFrame {
         dialog.setVisible(true);
     }
 
-
-
     private JTextField createTextField(String title, int fontSize) {
         JTextField field = new JTextField();
         field.setBorder(BorderFactory.createTitledBorder(
@@ -683,7 +732,6 @@ public class QuanLyNhanVien_GUI extends JFrame {
         field.setFont(new Font("Segoe UI", Font.PLAIN, fontSize));
         return field;
     }
-
 
     private JPanel createFooter() {
         JLabel lbl = new JLabel("Nhóm Quản lý Rạp Chiếu Phim", SwingConstants.CENTER);
@@ -697,6 +745,7 @@ public class QuanLyNhanVien_GUI extends JFrame {
         footer.add(lbl);
         return footer;
     }
+
     private void loadDataToTable() {
         try {
             modelNhanVien.setRowCount(0);
@@ -717,8 +766,7 @@ public class QuanLyNhanVien_GUI extends JFrame {
         }
     }
 
-
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> new QuanLyNhanVien_GUI().setVisible(true));
     }
-} 
+}
