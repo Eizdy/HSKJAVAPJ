@@ -75,10 +75,8 @@ public class LichChieuPhim_DAO {
             stmt.setString(1, maLichChieu);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    // Populate LoaiPhim
                     LoaiPhim loaiPhim = new LoaiPhim(rs.getString("maLoai"), rs.getString("tenLoai"));
 
-                    // Populate Phim
                     Phim phim = new Phim();
                     phim.setMaPhim(rs.getString("maPhim"));
                     phim.setTenPhim(rs.getString("tenPhim"));
@@ -91,12 +89,10 @@ public class LichChieuPhim_DAO {
                     phim.setDoTuoiGioiHan(rs.getInt("doTuoiGioiHan"));
                     phim.setNuocSX(rs.getString("nuocSX"));
 
-                    // Populate PhongChieuPhim
                     PhongChieuPhim phong = new PhongChieuPhim();
                     phong.setMaPhong(rs.getString("maPhong"));
                     phong.setTenPhong(rs.getString("tenPhong"));
 
-                    // Create and return LichChieuPhim
                     return new LichChieuPhim(
                             rs.getString("maLichChieu"),
                             phim,
@@ -126,10 +122,8 @@ public class LichChieuPhim_DAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                // Populate LoaiPhim
                 LoaiPhim loaiPhim = new LoaiPhim(rs.getString("maLoai"), rs.getString("tenLoai"));
 
-                // Populate Phim
                 Phim phim = new Phim();
                 phim.setMaPhim(rs.getString("maPhim"));
                 phim.setTenPhim(rs.getString("tenPhim"));
@@ -142,12 +136,10 @@ public class LichChieuPhim_DAO {
                 phim.setDoTuoiGioiHan(rs.getInt("doTuoiGioiHan"));
                 phim.setNuocSX(rs.getString("nuocSX"));
 
-                // Populate PhongChieuPhim
                 PhongChieuPhim phong = new PhongChieuPhim();
                 phong.setMaPhong(rs.getString("maPhong"));
                 phong.setTenPhong(rs.getString("tenPhong"));
 
-                // Create LichChieuPhim and add to list
                 LichChieuPhim lc = new LichChieuPhim(
                         rs.getString("maLichChieu"),
                         phim,
@@ -179,10 +171,8 @@ public class LichChieuPhim_DAO {
             stmt.setDate(1, Date.valueOf(ngay));
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    // Populate LoaiPhim
                     LoaiPhim loaiPhim = new LoaiPhim(rs.getString("maLoai"), rs.getString("tenLoai"));
 
-                    // Populate Phim
                     Phim phim = new Phim();
                     phim.setMaPhim(rs.getString("maPhim"));
                     phim.setTenPhim(rs.getString("tenPhim"));
@@ -195,12 +185,10 @@ public class LichChieuPhim_DAO {
                     phim.setDoTuoiGioiHan(rs.getInt("doTuoiGioiHan"));
                     phim.setNuocSX(rs.getString("nuocSX"));
 
-                    // Populate PhongChieuPhim
                     PhongChieuPhim phong = new PhongChieuPhim();
                     phong.setMaPhong(rs.getString("maPhong"));
                     phong.setTenPhong(rs.getString("tenPhong"));
 
-                    // Create LichChieuPhim and add to list
                     LichChieuPhim lich = new LichChieuPhim(
                             rs.getString("maLichChieu"),
                             phim,
@@ -214,6 +202,57 @@ public class LichChieuPhim_DAO {
             }
         } catch (SQLException e) {
             throw new SQLException("Lỗi khi lấy lịch chiếu theo ngày: " + e.getMessage(), e);
+        }
+        return ds;
+    }
+
+    public List<LichChieuPhim> layLichChieuTheoPhongVaNgay(String maPhong, LocalDate ngay) throws SQLException {
+        List<LichChieuPhim> ds = new ArrayList<>();
+        String sql = "SELECT lc.*, p.tenPhim, p.thoiLuong, p.daoDien, p.ngayKhoiChieu, p.moTa, p.ngonNgu, p.doTuoiGioiHan, p.nuocSX, " +
+                     "lp.maLoai, lp.tenLoai, pc.tenPhong " +
+                     "FROM LichChieuPhim lc " +
+                     "JOIN Phim p ON lc.maPhim = p.maPhim " +
+                     "JOIN LoaiPhim lp ON p.theLoai = lp.maLoai " +
+                     "JOIN PhongChieuPhim pc ON lc.maPhong = pc.maPhong " +
+                     "WHERE lc.maPhong = ? AND lc.ngayChieu = ?";
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, maPhong);
+            stmt.setDate(2, Date.valueOf(ngay));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    LoaiPhim loaiPhim = new LoaiPhim(rs.getString("maLoai"), rs.getString("tenLoai"));
+
+                    Phim phim = new Phim();
+                    phim.setMaPhim(rs.getString("maPhim"));
+                    phim.setTenPhim(rs.getString("tenPhim"));
+                    phim.setTheLoai(loaiPhim);
+                    phim.setThoiLuong(rs.getInt("thoiLuong"));
+                    phim.setDaoDien(rs.getString("daoDien"));
+                    phim.setNgayKhoiChieu(rs.getDate("ngayKhoiChieu") != null ? rs.getDate("ngayKhoiChieu").toLocalDate() : null);
+                    phim.setMoTa(rs.getString("moTa"));
+                    phim.setNgonNgu(rs.getString("ngonNgu"));
+                    phim.setDoTuoiGioiHan(rs.getInt("doTuoiGioiHan"));
+                    phim.setNuocSX(rs.getString("nuocSX"));
+
+                    PhongChieuPhim phong = new PhongChieuPhim();
+                    phong.setMaPhong(rs.getString("maPhong"));
+                    phong.setTenPhong(rs.getString("tenPhong"));
+
+                    LichChieuPhim lich = new LichChieuPhim(
+                            rs.getString("maLichChieu"),
+                            phim,
+                            phong,
+                            rs.getString("thoiGianChieu"),
+                            rs.getString("trangThai"),
+                            rs.getDate("ngayChieu") != null ? rs.getDate("ngayChieu").toLocalDate() : null
+                    );
+                    ds.add(lich);
+                }
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Lỗi khi lấy lịch chiếu theo phòng và ngày: " + e.getMessage(), e);
         }
         return ds;
     }

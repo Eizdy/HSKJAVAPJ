@@ -24,7 +24,7 @@ public class QuanLyBanVe_GUI extends JFrame {
     private JButton btnChonGhe;
     private LichChieuPhim_DAO lichChieu_DAO = new LichChieuPhim_DAO();
     private Phim_DAO phimDAO = new Phim_DAO();
-    private List<LichChieuPhim> danhSachLich; // Store the list of showtimes for the selected date
+    private List<LichChieuPhim> danhSachLich;
 
     public QuanLyBanVe_GUI() {
         setTitle("Quản lý bán vé - Rạp Chiếu Phim");
@@ -114,7 +114,6 @@ public class QuanLyBanVe_GUI extends JFrame {
         topPanel.add(dateChooser);
         topPanel.add(btnChonNgay);
 
-        // Table to display movies and showtimes
         modelPhim = new DefaultTableModel(new String[]{
                 "Mã lịch chiếu", "Tên phim", "Thời gian chiếu", "Ngày chiếu", "Thời lượng", "Đạo diễn", "Thể loại", "Ngôn ngữ"
         }, 0);
@@ -133,7 +132,6 @@ public class QuanLyBanVe_GUI extends JFrame {
                 BorderFactory.createLineBorder(Color.GRAY), "Danh sách phim và suất chiếu"));
         scrollPhim.getViewport().setBackground(new Color(45, 45, 45));
 
-        // Button to select seats
         btnChonGhe = new JButton("Chọn ghế");
         btnChonGhe.setForeground(Color.WHITE);
         btnChonGhe.setBackground(new Color(0, 120, 215));

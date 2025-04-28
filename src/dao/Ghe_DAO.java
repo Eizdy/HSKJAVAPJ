@@ -108,7 +108,6 @@ public class Ghe_DAO {
     public List<String> layViTriGheTheoMaHoaDon(String maHoaDon) throws SQLException {
         List<String> viTriGheList = new ArrayList<>();
         
-        // Step 1: Get the maVe and maLichChieu from the HoaDon
         String sqlGetMaVeAndLichChieu = 
             "SELECT vxp.maVe, vxp.maLichChieu " +
             "FROM HoaDon hd " +
@@ -132,7 +131,6 @@ public class Ghe_DAO {
             }
         }
 
-        // Step 2: Get the number of tickets (soLuong) from HoaDon
         String sqlGetSoLuong = "SELECT soLuong FROM HoaDon WHERE maHD = ?";
         int soLuong;
         try (Connection conn = ConnectDB.getConnection();
@@ -148,7 +146,6 @@ public class Ghe_DAO {
             }
         }
 
-        // Step 3: Extract the numeric part of baseMaVe (e.g., "V001" -> 1)
         int baseMaVeNumber;
         try {
             baseMaVeNumber = Integer.parseInt(baseMaVe.substring(1));
@@ -156,14 +153,12 @@ public class Ghe_DAO {
             throw new SQLException("Mã vé không hợp lệ: " + baseMaVe);
         }
 
-        // Step 4: Generate the range of maVe values (e.g., V001, V002, V003 for soLuong = 3)
         List<String> maVeList = new ArrayList<>();
         for (int i = 0; i < soLuong; i++) {
             String maVe = String.format("V%03d", baseMaVeNumber + i);
             maVeList.add(maVe);
         }
 
-        // Step 5: Fetch viTri for all VeXemPhim entries with the generated maVe values and matching maLichChieu
         String sqlGetViTri = 
             "SELECT g.viTri " +
             "FROM Ghe g " +
@@ -174,11 +169,9 @@ public class Ghe_DAO {
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sqlGetViTri)) {
             
-            // Set the maVe parameters
             for (int i = 0; i < maVeList.size(); i++) {
                 stmt.setString(i + 1, maVeList.get(i));
             }
-            // Set the maLichChieu parameter
             stmt.setString(maVeList.size() + 1, maLichChieu);
 
             try (ResultSet rs = stmt.executeQuery()) {

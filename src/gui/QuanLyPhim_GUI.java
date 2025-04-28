@@ -103,7 +103,6 @@ public class QuanLyPhim_GUI extends JFrame {
         modelPhim = new DefaultTableModel(cols, 0);
         tblPhim = new JTable(modelPhim);
         
-        // Customize table appearance
         tblPhim.setBackground(new Color(60, 60, 60));
         tblPhim.setForeground(Color.WHITE);
         tblPhim.setFont(new Font("Segoe UI", Font.PLAIN, 13));
@@ -112,7 +111,6 @@ public class QuanLyPhim_GUI extends JFrame {
         tblPhim.setSelectionForeground(Color.WHITE);
         tblPhim.setGridColor(new Color(80, 80, 80));
         
-        // Custom cell renderer
         tblPhim.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
@@ -199,10 +197,8 @@ public class QuanLyPhim_GUI extends JFrame {
         actionPanel.add(btnTimKiem);
         actionPanel.add(btnXoaTrang);
 
-        // Add action listener for search button
         btnTimKiem.addActionListener(e -> searchPhim());
 
-        // Add action listener for clear button
         btnXoaTrang.addActionListener(e -> {
             txtMaPhim.setText("");
             txtTenPhim.setText("");
@@ -301,7 +297,6 @@ public class QuanLyPhim_GUI extends JFrame {
             String maPhim = txtMaPhim.getText().trim();
             String tenPhim = txtTenPhim.getText().trim();
             
-            // Validate input
             if (!chkMaPhim.isSelected() && !chkTenPhim.isSelected()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng chọn một tiêu chí tìm kiếm!");
                 return;
@@ -313,7 +308,7 @@ public class QuanLyPhim_GUI extends JFrame {
                 return;
             }
 
-            modelPhim.setRowCount(0); // Clear table
+            modelPhim.setRowCount(0);
             
             boolean found = false;
             int rowIndex = 0;
@@ -363,9 +358,8 @@ public class QuanLyPhim_GUI extends JFrame {
 
             if (!found) {
                 JOptionPane.showMessageDialog(this, "Không tìm thấy phim phù hợp!");
-                loadDataToTable(); // Reload all data if no results
+                loadDataToTable();
             } else if (selectIndex >= 0) {
-                // Select and scroll to the found row
                 tblPhim.setRowSelectionInterval(selectIndex, selectIndex);
                 tblPhim.scrollRectToVisible(tblPhim.getCellRect(selectIndex, 0, true));
             }

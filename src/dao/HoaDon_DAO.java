@@ -14,13 +14,6 @@ import java.util.*;
 
 public class HoaDon_DAO {
 
-    /**
-     * Adds a new invoice to the database.
-     *
-     * @param hoaDon The HoaDon object to add.
-     * @return true if the invoice was added successfully, false otherwise.
-     * @throws RuntimeException if a database error occurs.
-     */
     public boolean themHoaDon(HoaDon hoaDon) {
         String sql = "INSERT INTO HoaDon (maHD, ngayLap, soLuong, maVe, maNV) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = ConnectDB.getConnection();
@@ -30,7 +23,7 @@ public class HoaDon_DAO {
             stmt.setDate(2, Date.valueOf(hoaDon.getNgayLap()));
             stmt.setInt(3, hoaDon.getSoLuong());
             stmt.setString(4, hoaDon.getVe().getMaVe());
-            stmt.setString(5, hoaDon.getMaNV().getMaNV()); // Ensure maNV is extracted correctly
+            stmt.setString(5, hoaDon.getMaNV().getMaNV());
 
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
@@ -43,7 +36,6 @@ public class HoaDon_DAO {
         }
     }
 
-    // Existing methods (timHoaDonTheoMa, layTatCaHoaDon, getHoaDonTheoNgay) remain unchanged
     public HoaDon timHoaDonTheoMa(String maHD) {
         if (maHD == null || maHD.trim().isEmpty()) {
             throw new IllegalArgumentException("Mã hóa đơn không được để trống.");

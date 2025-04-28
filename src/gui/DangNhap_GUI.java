@@ -25,7 +25,6 @@ public class DangNhap_GUI extends JFrame {
         setResizable(false);
         setLayout(new BorderLayout());
 
-        // Apply consistent UI settings
         UIManager.put("Label.foreground", Color.WHITE);
         UIManager.put("TitledBorder.titleColor", Color.LIGHT_GRAY);
 
@@ -36,7 +35,7 @@ public class DangNhap_GUI extends JFrame {
 
         try {
             ImageIcon imageIcon = new ImageIcon(getClass().getResource("/img/login2.jpg"));
-            Image scaledImage = imageIcon.getImage().getScaledInstance(250, 450, Image.SCALE_SMOOTH);
+            Image scaledImage = imageIcon.getImage().getScaledInstance(270, 650, Image.SCALE_SMOOTH);
             lblImage = new JLabel(new ImageIcon(scaledImage));
         } catch (Exception e) {
             lblImage = new JLabel("Không tải được ảnh", SwingConstants.CENTER);

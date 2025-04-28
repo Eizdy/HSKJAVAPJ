@@ -7,6 +7,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -16,6 +17,8 @@ import dao.PhongChieuPhim_DAO;
 import entity.LichChieuPhim;
 import entity.Phim;
 import entity.PhongChieuPhim;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SuatChieu_GUI extends JFrame {
     private JTable tblSuatChieu;
@@ -41,7 +44,15 @@ public class SuatChieu_GUI extends JFrame {
         add(createSidebar(), BorderLayout.WEST);
         add(createMainContent(), BorderLayout.CENTER);
         add(createFooter(), BorderLayout.SOUTH);
-
+        
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                SwingUtilities.invokeLater(() -> loadDataToTable());
+            }
+        }, 0, 60 * 1000);
+        
         loadDataToTable();
     }
 
@@ -108,7 +119,6 @@ public class SuatChieu_GUI extends JFrame {
         modelSuatChieu = new DefaultTableModel(cols, 0);
         tblSuatChieu = new JTable(modelSuatChieu);
 
-        // Customize table appearance
         tblSuatChieu.setBackground(new Color(60, 60, 60));
         tblSuatChieu.setForeground(Color.WHITE);
         tblSuatChieu.setFont(new Font("Segoe UI", Font.PLAIN, 13));
@@ -117,7 +127,6 @@ public class SuatChieu_GUI extends JFrame {
         tblSuatChieu.setSelectionForeground(Color.WHITE);
         tblSuatChieu.setGridColor(new Color(80, 80, 80));
 
-        // Custom cell renderer to fix white border issue
         tblSuatChieu.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
@@ -135,7 +144,7 @@ public class SuatChieu_GUI extends JFrame {
         scroll.getViewport().setBackground(new Color(45, 45, 45));
         main.add(scroll, BorderLayout.CENTER);
 
-        // East - Search Panel
+        // East- Tra cuu
         JPanel east = new JPanel();
         east.setLayout(new BoxLayout(east, BoxLayout.Y_AXIS));
         east.setBackground(new Color(45, 45, 45));
@@ -177,7 +186,6 @@ public class SuatChieu_GUI extends JFrame {
         txtNgayChieu.setCaretColor(Color.WHITE);
         txtNgayChieu.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
-        // Make checkboxes mutually exclusive
         chkTenPhim.addActionListener(e -> {
             if (chkTenPhim.isSelected()) {
                 chkNgayChieu.setSelected(false);
@@ -229,7 +237,7 @@ public class SuatChieu_GUI extends JFrame {
 
         main.add(east, BorderLayout.EAST);
 
-        // South - Action Buttons
+        // South - cac nut
         JPanel south = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
         south.setBackground(new Color(45, 45, 45));
 
@@ -416,7 +424,7 @@ public class SuatChieu_GUI extends JFrame {
         txtMaLichChieu.setBorder(BorderFactory.createTitledBorder("Mã lịch chiếu"));
         txtMaLichChieu.setBackground(new Color(60, 60, 60));
         txtMaLichChieu.setForeground(Color.WHITE);
-        txtMaLichChieu.setCaretColor(Color.WHITE); // Set caret color to white
+        txtMaLichChieu.setCaretColor(Color.WHITE);
         txtMaLichChieu.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         txtMaLichChieu.setEditable(false);
 
@@ -425,7 +433,7 @@ public class SuatChieu_GUI extends JFrame {
         txtMaPhim.setBorder(BorderFactory.createTitledBorder("Mã phim"));
         txtMaPhim.setBackground(new Color(60, 60, 60));
         txtMaPhim.setForeground(Color.WHITE);
-        txtMaPhim.setCaretColor(Color.WHITE); // Set caret color to white
+        txtMaPhim.setCaretColor(Color.WHITE);
         txtMaPhim.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         txtMaPhim.setEditable(false);
 
@@ -435,7 +443,6 @@ public class SuatChieu_GUI extends JFrame {
         cboTenPhim.setBackground(new Color(60, 60, 60));
         cboTenPhim.setForeground(Color.WHITE);
         cboTenPhim.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        // Custom renderer to ensure proper display
         cboTenPhim.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -454,7 +461,7 @@ public class SuatChieu_GUI extends JFrame {
                 cboTenPhim.addItem(phim);
             }
             if (phimList.size() > 0) {
-                cboTenPhim.setSelectedIndex(0); // Select the first item by default
+                cboTenPhim.setSelectedIndex(0);
                 txtMaPhim.setText(((Phim) cboTenPhim.getSelectedItem()).getMaPhim());
             }
         } catch (Exception e) {
@@ -472,7 +479,7 @@ public class SuatChieu_GUI extends JFrame {
         txtThoiGianChieu.setBorder(BorderFactory.createTitledBorder("Thời gian chiếu (HH:mm)"));
         txtThoiGianChieu.setBackground(new Color(60, 60, 60));
         txtThoiGianChieu.setForeground(Color.WHITE);
-        txtThoiGianChieu.setCaretColor(Color.WHITE); // Set caret color to white
+        txtThoiGianChieu.setCaretColor(Color.WHITE);
         txtThoiGianChieu.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
         // Ngày chiếu
@@ -480,7 +487,7 @@ public class SuatChieu_GUI extends JFrame {
         txtNgayChieu.setBorder(BorderFactory.createTitledBorder("Ngày chiếu (yyyy-MM-dd)"));
         txtNgayChieu.setBackground(new Color(60, 60, 60));
         txtNgayChieu.setForeground(Color.WHITE);
-        txtNgayChieu.setCaretColor(Color.WHITE); // Set caret color to white
+        txtNgayChieu.setCaretColor(Color.WHITE);
         txtNgayChieu.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
         // Phòng (JComboBox)
@@ -489,7 +496,6 @@ public class SuatChieu_GUI extends JFrame {
         cboPhong.setBackground(new Color(60, 60, 60));
         cboPhong.setForeground(Color.WHITE);
         cboPhong.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        // Custom renderer to ensure proper display
         cboPhong.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -508,7 +514,7 @@ public class SuatChieu_GUI extends JFrame {
                 cboPhong.addItem(phong);
             }
             if (phongList.size() > 0) {
-                cboPhong.setSelectedIndex(0); // Select the first item by default
+                cboPhong.setSelectedIndex(0);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(dialog, "Không thể tải danh sách phòng: " + e.getMessage());
@@ -553,7 +559,17 @@ public class SuatChieu_GUI extends JFrame {
 
                 LocalDate ngayChieu = LocalDate.parse(ngayChieuStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-                LichChieuPhim lc = new LichChieuPhim(maLichChieu, phim, phong, thoiGianChieu, "Đang chiếu", ngayChieu);
+                // Kiểm tra trùng lịch chiếu
+                if (isRoomOccupied(null, phong, ngayChieu, thoiGianChieu, phim)) {
+                    JOptionPane.showMessageDialog(dialog, "Phòng " + phong.getTenPhong() + 
+                        " đã có lịch chiếu trong khoảng thời gian này!");
+                    return;
+                }
+
+                // Xác định trạng thái dựa trên thời gian thực tế
+                String trangThai = determineTrangThai(ngayChieu, thoiGianChieu, phim);
+
+                LichChieuPhim lc = new LichChieuPhim(maLichChieu, phim, phong, thoiGianChieu, trangThai, ngayChieu);
 
                 if (lichChieuDAO.themLichChieu(lc)) {
                     JOptionPane.showMessageDialog(dialog, "Đã thêm suất chiếu: " + phim.getTenPhim());
@@ -592,7 +608,7 @@ public class SuatChieu_GUI extends JFrame {
         }
 
         JDialog dialog = new JDialog(this, "Sửa Suất Chiếu", true);
-        dialog.setSize(550, 400);
+        dialog.setSize(550, 350);
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(new BorderLayout(10, 10));
 
@@ -607,7 +623,7 @@ public class SuatChieu_GUI extends JFrame {
 
         // Center: Input Fields
         JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new GridLayout(4, 2, 10, 10));
+        inputPanel.setLayout(new GridLayout(3, 2, 10, 10));
         inputPanel.setBackground(new Color(45, 45, 45));
         inputPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
@@ -658,7 +674,6 @@ public class SuatChieu_GUI extends JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(dialog, "Không thể tải danh sách phim: " + e.getMessage());
         }
-        // Add ActionListener to update txtMaPhim when a new movie is selected
         cboTenPhim.addActionListener(e -> {
             Phim selectedPhim = (Phim) cboTenPhim.getSelectedItem();
             if (selectedPhim != null) {
@@ -690,14 +705,6 @@ public class SuatChieu_GUI extends JFrame {
         txtNgonNgu.setCaretColor(Color.WHITE);
         txtNgonNgu.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         txtNgonNgu.setEditable(false);
-
-        // Trạng thái
-        JTextField txtTrangThai = new JTextField(modelSuatChieu.getValueAt(selectedRow, 6).toString());
-        txtTrangThai.setBorder(BorderFactory.createTitledBorder("Trạng thái"));
-        txtTrangThai.setBackground(new Color(60, 60, 60));
-        txtTrangThai.setForeground(Color.WHITE);
-        txtTrangThai.setCaretColor(Color.WHITE);
-        txtTrangThai.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
         // Phòng (JComboBox)
         JComboBox<PhongChieuPhim> cboPhong = new JComboBox<>();
@@ -735,7 +742,6 @@ public class SuatChieu_GUI extends JFrame {
         inputPanel.add(txtThoiGianChieu);
         inputPanel.add(txtNgayChieu);
         inputPanel.add(txtNgonNgu);
-        inputPanel.add(txtTrangThai);
         inputPanel.add(cboPhong);
 
         dialog.add(inputPanel, BorderLayout.CENTER);
@@ -756,10 +762,9 @@ public class SuatChieu_GUI extends JFrame {
                 Phim phim = (Phim) cboTenPhim.getSelectedItem();
                 String thoiGianChieu = txtThoiGianChieu.getText().trim();
                 String ngayChieuStr = txtNgayChieu.getText().trim();
-                String trangThai = txtTrangThai.getText().trim();
                 PhongChieuPhim phong = (PhongChieuPhim) cboPhong.getSelectedItem();
 
-                if (maLichChieu.isEmpty() || phim == null || thoiGianChieu.isEmpty() || ngayChieuStr.isEmpty() || trangThai.isEmpty() || phong == null) {
+                if (maLichChieu.isEmpty() || phim == null || thoiGianChieu.isEmpty() || ngayChieuStr.isEmpty() || phong == null) {
                     JOptionPane.showMessageDialog(dialog, "Vui lòng nhập đầy đủ các trường bắt buộc!");
                     return;
                 }
@@ -770,6 +775,16 @@ public class SuatChieu_GUI extends JFrame {
                 }
 
                 LocalDate ngayChieu = LocalDate.parse(ngayChieuStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                // Kiểm tra trùng lịch chiếu (bỏ qua chính lịch chiếu đang sửa)
+                if (isRoomOccupied(maLichChieu, phong, ngayChieu, thoiGianChieu, phim)) {
+                    JOptionPane.showMessageDialog(dialog, "Phòng " + phong.getTenPhong() + 
+                        " đã có lịch chiếu trong khoảng thời gian này!");
+                    return;
+                }
+
+                // Xác định trạng thái dựa trên thời gian thực tế
+                String trangThai = determineTrangThai(ngayChieu, thoiGianChieu, phim);
 
                 LichChieuPhim lc = new LichChieuPhim(maLichChieu, phim, phong, thoiGianChieu, trangThai, ngayChieu);
 
@@ -814,12 +829,73 @@ public class SuatChieu_GUI extends JFrame {
         footer.add(lbl);
         return footer;
     }
+    
+    private String determineTrangThai(LocalDate ngayChieu, String thoiGianChieu, Phim phim) {
+        try {
+            LocalDateTime showTime = LocalDateTime.parse(
+                ngayChieu.toString() + "T" + thoiGianChieu,
+                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+            );
 
+            LocalDateTime now = LocalDateTime.now();
+
+            LocalDateTime endTime = showTime.plusMinutes(phim.getThoiLuong());
+
+            if (now.isBefore(showTime)) {
+                return "Sắp chiếu";
+            } else if (now.isAfter(showTime) && now.isBefore(endTime)) {
+                return "Đang chiếu";
+            } else {
+                return "Đã chiếu";
+            }
+        } catch (Exception e) {
+            return "Sắp chiếu";
+        }
+    }
+    
+    private boolean isRoomOccupied(String maLichChieu, PhongChieuPhim phong, LocalDate ngayChieu, String thoiGianChieu, Phim phim) {
+        try {
+            LocalDateTime startTime = LocalDateTime.parse(
+                ngayChieu.toString() + "T" + thoiGianChieu,
+                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+            );
+
+            LocalDateTime endTime = startTime.plusMinutes(phim.getThoiLuong());
+
+            List<LichChieuPhim> lichChieuList = lichChieuDAO.layLichChieuTheoPhongVaNgay(phong.getMaPhong(), ngayChieu);
+
+            for (LichChieuPhim lc : lichChieuList) {
+                if (maLichChieu != null && lc.getMaLichChieu().equals(maLichChieu)) {
+                    continue;
+                }
+
+                LocalDateTime existingStartTime = LocalDateTime.parse(
+                    lc.getNgayChieu().toString() + "T" + lc.getThoiGianChieu(),
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+                );
+                LocalDateTime existingEndTime = existingStartTime.plusMinutes(lc.getPhim().getThoiLuong());
+
+                if (!(endTime.isBefore(existingStartTime) || startTime.isAfter(existingEndTime))) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi kiểm tra lịch chiếu: " + e.getMessage());
+            return true;
+        }
+    }
+    
     private void loadDataToTable() {
         try {
             modelSuatChieu.setRowCount(0);
             List<LichChieuPhim> list = lichChieuDAO.layTatCaLichChieu();
             for (LichChieuPhim lc : list) {
+                // Cập nhật trạng thái dựa trên thời gian thực tế
+                String trangThai = determineTrangThai(lc.getNgayChieu(), lc.getThoiGianChieu(), lc.getPhim());
+                lc.setTrangThai(trangThai);
+                lichChieuDAO.capNhatLichChieu(lc);
+
                 modelSuatChieu.addRow(new Object[]{
                     lc.getMaLichChieu(),
                     lc.getPhim().getMaPhim(),

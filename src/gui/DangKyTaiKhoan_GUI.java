@@ -20,13 +20,12 @@ public class DangKyTaiKhoan_GUI extends JFrame {
 
     public DangKyTaiKhoan_GUI() {
         setTitle("Đăng Ký Tài Khoản - Rạp Chiếu Phim");
-        setSize(670, 450);
+        setSize(650, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(new BorderLayout());
 
-        // Apply consistent UI settings
         UIManager.put("Label.foreground", Color.WHITE);
         UIManager.put("TitledBorder.titleColor", Color.LIGHT_GRAY);
 
@@ -37,7 +36,7 @@ public class DangKyTaiKhoan_GUI extends JFrame {
 
         try {
             ImageIcon imageIcon = new ImageIcon(getClass().getResource("/img/login2.jpg"));
-            Image scaledImage = imageIcon.getImage().getScaledInstance(250, 450, Image.SCALE_SMOOTH);
+            Image scaledImage = imageIcon.getImage().getScaledInstance(270, 650, Image.SCALE_SMOOTH);
             lblImage = new JLabel(new ImageIcon(scaledImage));
         } catch (Exception e) {
             lblImage = new JLabel("Không tải được ảnh", SwingConstants.CENTER);
@@ -195,7 +194,6 @@ public class DangKyTaiKhoan_GUI extends JFrame {
         errPassword.setText("");
         errConfirmPassword.setText("");
 
-        // Validate username
         String username = txtUsername.getText().trim();
         if (username.isEmpty()) {
             errUsername.setText("Tên tài khoản không được trống.");
@@ -206,7 +204,6 @@ public class DangKyTaiKhoan_GUI extends JFrame {
             txtUsername.requestFocus();
             isValid = false;
         } else {
-            // Check duplicate username
             TaiKhoan_DAO dao = new TaiKhoan_DAO();
             try {
                 TaiKhoan existingAccount = dao.timTaiKhoanTheoTen(username);
@@ -222,7 +219,6 @@ public class DangKyTaiKhoan_GUI extends JFrame {
             }
         }
 
-        // Validate password
         String password = new String(txtPassword.getPassword());
         if (password.isEmpty()) {
             errPassword.setText("Mật khẩu không được trống.");
@@ -238,7 +234,6 @@ public class DangKyTaiKhoan_GUI extends JFrame {
             isValid = false;
         }
 
-        // Validate confirm password
         String confirmPassword = new String(txtConfirmPassword.getPassword());
         if (!confirmPassword.equals(password)) {
             errConfirmPassword.setText("Mật khẩu xác nhận không khớp.");

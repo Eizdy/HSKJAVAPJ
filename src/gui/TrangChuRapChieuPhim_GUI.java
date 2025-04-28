@@ -81,15 +81,13 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
         main.setBorder(new EmptyBorder(10, 10, 10, 10));
         main.setBackground(new Color(45, 45, 45));
 
-        // Banner Panel
         JPanel bannerPanel = new JPanel();
         bannerPanel.setBackground(new Color(45, 45, 45));
-        bannerPanel.setBorder(new EmptyBorder(0, 0, 10, 0)); // Add some spacing below the banner
+        bannerPanel.setBorder(new EmptyBorder(0, 0, 10, 0));
 
         URL bannerURL = getClass().getResource("/img/banner4.jpg");
         if (bannerURL != null) {
             ImageIcon bannerIcon = new ImageIcon(bannerURL);
-            // Scale the banner to fit the width of the window (minus sidebar and padding)
             Image scaledBanner = bannerIcon.getImage().getScaledInstance(1050, 350, Image.SCALE_SMOOTH);
             JLabel bannerLabel = new JLabel(new ImageIcon(scaledBanner));
             bannerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -101,7 +99,6 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
             bannerPanel.add(bannerLabel);
         }
 
-        // Movie List Panel
         JPanel phimPanel = new JPanel(new GridLayout(0, 3, 20, 20));
         phimPanel.setBackground(new Color(45, 45, 45));
 
@@ -130,7 +127,6 @@ public class TrangChuRapChieuPhim_GUI extends JFrame {
         scrollPhim.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "🎥 Danh sách phim"));
         scrollPhim.setBackground(new Color(45, 45, 45));
 
-        // Add banner and movie list to the main panel
         main.add(bannerPanel, BorderLayout.NORTH);
         main.add(scrollPhim, BorderLayout.CENTER);
 

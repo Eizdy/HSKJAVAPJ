@@ -136,7 +136,6 @@ public class ChonGhe_GUI extends JFrame {
                         int number = Integer.parseInt(maVe.substring(1));
                         maxNumber = Math.max(maxNumber, number);
                     } catch (NumberFormatException e) {
-                        // Skip invalid maVe values
                     }
                 }
             }
@@ -157,7 +156,6 @@ public class ChonGhe_GUI extends JFrame {
                         int number = Integer.parseInt(maHoaDon.substring(2));
                         maxNumber = Math.max(maxNumber, number);
                     } catch (NumberFormatException e) {
-                        // Skip invalid maHoaDon values
                     }
                 }
             }
@@ -172,7 +170,6 @@ public class ChonGhe_GUI extends JFrame {
             NhanVien nhanVien = new NhanVien();
             nhanVien.setMaNV("NV01");
 
-            // Generate base numbers for maVe
             int baseMaVeNumber;
             try {
                 String lastMaVe = generateNextMaVe();
@@ -181,19 +178,15 @@ public class ChonGhe_GUI extends JFrame {
                 baseMaVeNumber = 0;
             }
 
-            // Generate a single maHoaDon for the invoice
             String maHoaDon = generateNextMaHoaDon();
             System.out.println("Tạo mã hóa đơn: " + maHoaDon);
 
-            // List to store all tickets (VeXemPhim) for this booking
             List<VeXemPhim> tickets = new ArrayList<>();
 
-            // Create and save tickets for each selected seat
             for (int i = 0; i < selectedSeats.size(); i++) {
                 String seatId = selectedSeats.get(i);
                 String maVe = String.format("V%03d", baseMaVeNumber + i);
 
-                // Create and save new KhachHang
                 String maKhachHang = khachHangDAO.generateNextMaKhachHang();
                 KhachHang khachHang = new KhachHang();
                 khachHang.setMaKhachHang(maKhachHang);
@@ -201,7 +194,6 @@ public class ChonGhe_GUI extends JFrame {
                 khachHangDAO.themKhachHang(khachHang);
                 System.out.println("Khách hàng " + maKhachHang + " đã được thêm vào cơ sở dữ liệu.");
 
-                // Create VeXemPhim
                 VeXemPhim ve = new VeXemPhim();
                 ve.setMaVe(maVe);
                 ve.setLichChieu(lichChieu);
@@ -212,21 +204,16 @@ public class ChonGhe_GUI extends JFrame {
                 ve.setGiaVe(50000);
                 ve.setNhanVien(nhanVien);
 
-                // Save VeXemPhim
                 veXemPhimDAO.themVe(ve);
                 System.out.println("Vé " + maVe + " đã được thêm vào cơ sở dữ liệu.");
 
-                // Add ticket to the list
                 tickets.add(ve);
             }
 
-            // Create a single HoaDon with the total quantity
             if (!tickets.isEmpty()) {
-                // Link HoaDon to the first VeXemPhim
                 HoaDon hoaDon = new HoaDon(maHoaDon, LocalDate.now(), selectedSeats.size(), tickets.get(0), nhanVien);
                 System.out.println("Tạo hóa đơn: " + maHoaDon + ", maVe: " + tickets.get(0).getMaVe() + ", maNV: " + nhanVien.getMaNV() + ", soLuong: " + selectedSeats.size());
 
-                // Save HoaDon
                 hoaDonDAO.themHoaDon(hoaDon);
             }
 

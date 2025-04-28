@@ -9,20 +9,13 @@ import java.util.List;
 
 public class KhachHang_DAO {
 
-    /**
-     * Adds a new customer to the database.
-     *
-     * @param khachHang The KhachHang object to add.
-     * @return true if the customer was added successfully, false otherwise.
-     * @throws RuntimeException if a database error occurs.
-     */
     public boolean themKhachHang(KhachHang khachHang) {
         String sql = "INSERT INTO KhachHang (maKH, tenKH) VALUES (?, ?)";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, khachHang.getMaKhachHang());
-            stmt.setString(2, khachHang.getTenKH()); // Can be null
+            stmt.setString(2, khachHang.getTenKH());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -30,12 +23,6 @@ public class KhachHang_DAO {
         }
     }
 
-    /**
-     * Retrieves all customers from the database.
-     *
-     * @return A List of KhachHang objects.
-     * @throws RuntimeException if a database error occurs.
-     */
     public List<KhachHang> layTatCaKhachHang() {
         List<KhachHang> ds = new ArrayList<>();
         String sql = "SELECT * FROM KhachHang";
@@ -55,12 +42,6 @@ public class KhachHang_DAO {
         return ds;
     }
 
-    /**
-     * Generates the next customer ID (e.g., KH51 if there are 50 customers).
-     *
-     * @return The next customer ID as a String.
-     * @throws RuntimeException if a database error occurs.
-     */
     public String generateNextMaKhachHang() {
         try {
             List<KhachHang> khachHangList = layTatCaKhachHang();
@@ -72,7 +53,6 @@ public class KhachHang_DAO {
                         int number = Integer.parseInt(maKH.substring(2));
                         maxNumber = Math.max(maxNumber, number);
                     } catch (NumberFormatException e) {
-                        // Skip invalid maKH values
                     }
                 }
             }
